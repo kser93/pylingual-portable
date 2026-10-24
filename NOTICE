@@ -1,16 +1,34 @@
 PyLingual Portable
 ==================
 
-This local build includes source code from PyLingual:
-  https://github.com/syssec-utd/pylingual
-  License: GPL-3.0-only (see LICENSE)
+Copyright (C) 2026 PyLingual Portable contributors.
 
-It also includes Python, PyTorch, Transformers, Tokenizers, NumPy, xdis,
-safetensors, and other third-party packages. Their licenses are distributed
-with the corresponding packages under runtime/python-3.15.1/Lib/site-packages.
+This repository embeds unmodified upstream source:
+
+  PyLingual 0.1.0
+    https://github.com/syssec-utd/pylingual
+    commit 11a1516d84a6c2aa71ec23fbd11e4b99dc8c4a86 (tag v0.1.0)
+    License: GPL-3.0-only (see LICENSE and vendor/pylingual/LICENSE)
+    Local patches: none
+
+  xdis 6.3.1.dev0
+    https://github.com/rocky/python-xdis
+    commit 51e36c42a01a83d67f6530fdf7fbd42a0f387d86
+    License: GPL-2.0-or-later (see vendor/xdis-src/COPYING)
+    Local patches: none
+
+The portable wrapper under src/ is distributed under GPL-3.0 as a combined
+work. See vendor/components.json for machine-readable pins and tree hashes,
+and vendor/UPSTREAM.md for the sync and patch policy.
+
+This repository also includes Python, PyTorch, Transformers, Tokenizers,
+NumPy, safetensors, and other third-party packages. Their licenses are
+distributed with the corresponding packages under
+runtime/python-3.15.1/Lib/site-packages.
 
 Model weights are downloaded from Hugging Face repositories under
-https://huggingface.co/syssec-utd. Refer to each model card for its license
-and provenance. The statement models are declared Apache-2.0; the segmenter
-model cards do not currently declare a license, so this build is intended for
-personal, non-commercial use only and is not to be redistributed.
+https://huggingface.co/syssec-utd. They are not part of this repository.
+Refer to each model card for its license and provenance. The statement models
+are declared Apache-2.0; the segmenter model cards do not currently declare a
+license, so model packs remain personal, non-commercial, and are not
+redistributed with this repository.

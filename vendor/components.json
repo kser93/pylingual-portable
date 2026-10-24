@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "algorithm": "sha256-tree-v1",
+  "verified_at": "2026-10-24",
+  "components": {
+    "pylingual": {
+      "path": "vendor/pylingual",
+      "upstream": "https://github.com/syssec-utd/pylingual",
+      "version": "0.1.0",
+      "tag": "v0.1.0",
+      "commit": "11a1516d84a6c2aa71ec23fbd11e4b99dc8c4a86",
+      "license": "GPL-3.0-only",
+      "license_file": "vendor/pylingual/LICENSE",
+      "patches": [],
+      "exclude_dirs": [
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache"
+      ],
+      "exclude_globs": [
+        "*.pyc",
+        "*.pyo"
+      ],
+      "tree_sha256": "847072667cb1e6993472949c750b1527643bf03a7ec0593655604b91dead895d",
+      "file_count": 150
+    },
+    "xdis": {
+      "path": "vendor/xdis-src",
+      "upstream": "https://github.com/rocky/python-xdis",
+      "version": "6.3.1.dev0",
+      "commit": "51e36c42a01a83d67f6530fdf7fbd42a0f387d86",
+      "license": "GPL-2.0-or-later",
+      "license_file": "vendor/xdis-src/COPYING",
+      "patches": [],
+      "exclude_dirs": [
+        ".git",
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        "build",
+        "dist"
+      ],
+      "exclude_globs": [
+        "*.egg-info",
+        "*.egg-info/**",
+        "*.pyc",
+        "*.pyo"
+      ],
+      "tree_sha256": "8683c01ce4f65f4d925e30301f35ea1ff8fb8a0a7196f7aa59548789026e211c",
+      "file_count": 318
+    }
+  }
+}

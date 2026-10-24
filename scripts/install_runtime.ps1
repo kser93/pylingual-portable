@@ -37,6 +37,8 @@ Write-Host 'Installing pinned runtime dependencies...'
 if ($LASTEXITCODE -ne 0) { throw 'runtime dependency installation failed' }
 
 Write-Host 'Installing xdis from the pinned upstream commit...'
+# Pin: xdis 6.3.1.dev0 @ 51e36c42a01a83d67f6530fdf7fbd42a0f387d86
+# See vendor/components.json and vendor/UPSTREAM.md.
 & $Python -m pip install --no-cache-dir --no-deps (Join-Path $Root 'vendor\xdis-src')
 if ($LASTEXITCODE -ne 0) { throw 'xdis installation failed' }
 

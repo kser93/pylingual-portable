@@ -13,6 +13,7 @@ from mcp.server import MCPServer
 from . import sessions
 from .paths import ROOT, TOOLCHAINS
 from .runner import decompile_file, detect_version
+from .upstream import assert_contract
 
 
 logging.basicConfig(
@@ -205,6 +206,22 @@ def get_capabilities() -> dict[str, Any]:
             models = sorted(json.loads(installed_path.read_text(encoding="utf-8")).get("installed", {}))
         except json.JSONDecodeError:
             models = []
+    components: dict[str, dict[str, Any]] = {}
+    components_path = ROOT / "vendor" / "components.json"
+    if components_path.exists():
+        try:
+            raw_components = json.loads(components_path.read_text(encoding="utf-8")).get("components", {})
+            components = {
+                name: {
+                    "version": spec.get("version"),
+                    "commit": spec.get("commit"),
+                    "license": spec.get("license"),
+                    "patches": len(spec.get("patches", [])),
+                }
+                for name, spec in raw_components.items()
+            }
+        except json.JSONDecodeError:
+            components = {}
     toolchains = sorted(path.parent.name for path in TOOLCHAINS.glob("cpython-*-win-x64/python.exe"))
     try:
         import torch
@@ -221,6 +238,7 @@ def get_capabilities() -> dict[str, Any]:
         "python": sys.version.split()[0],
         "models": models,
         "toolchains": toolchains,
+        "components": components,
         "cuda_available": cuda,
         "device": device,
         "limits": {
@@ -234,9 +252,16 @@ def get_capabilities() -> dict[str, Any]:
 def doctor() -> dict[str, Any]:
     """Check the local runtime and return a compact health summary."""
     capabilities = get_capabilities()
+    try:
+        contract = assert_contract()
+        contract_ok = True
+    except Exception as exc:
+        contract = {"ok": False, "error": repr(exc)}
+        contract_ok = False
     return {
-        "ok": bool(capabilities["models"]) and bool(capabilities["toolchains"]),
+        "ok": bool(capabilities["models"]) and bool(capabilities["toolchains"]) and contract_ok,
         **capabilities,
+        "upstream_contract": contract,
         "models_dir": str(ROOT / "models"),
         "sessions_dir": str(sessions.SESSIONS),
     }

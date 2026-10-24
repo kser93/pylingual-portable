@@ -11,6 +11,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 OPENCODE = ROOT / ".opencode"
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from check_vendor import check_components  # noqa: E402
 
 
 def strip_jsonc(text: str) -> str:
@@ -68,6 +71,9 @@ def frontmatter(path: Path) -> dict:
 
 def main() -> int:
     errors = []
+    vendor = check_components()
+    for error in vendor["errors"]:
+        errors.append(f"vendor: {error}")
     config_path = OPENCODE / "opencode.jsonc"
     config = json.loads(strip_jsonc(config_path.read_text(encoding="utf-8")))
     server = config.get("mcp", {}).get("servers", {}).get("pylingual", {})
@@ -184,7 +190,8 @@ def main() -> int:
         return 1
     print(
         f"OK: {len(commands)} commands, {task_count} tasks "
-        f"({len(task_manifests)} manifests), {len(references)} references"
+        f"({len(task_manifests)} manifests), {len(references)} references, "
+        f"{len(vendor['components'])} vendor components"
     )
     print(f"agent: {agent.relative_to(ROOT)}")
     print(f"mcp: {server.get('command')}")

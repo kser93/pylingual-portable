@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import gc
+import json
 import os
+from functools import lru_cache
 from pathlib import Path
 
 import torch
@@ -16,30 +18,56 @@ from transformers import (
     RobertaTokenizer,
 )
 
-from pylingual.models import CacheTranslator
-from pylingual.utils.version import PythonVersion
-
-from .paths import CONFIG, HF_HUB
+from .paths import CONFIG, HF_HUB, MODEL_LINKS
+from .upstream import CacheTranslator, PythonVersion
 
 
 _MODEL_CACHE: dict[tuple[str, str], tuple[object, CacheTranslator]] = {}
 
 
-def _snapshot(repo_id: str) -> Path:
-    folder = HF_HUB / ("models--" + repo_id.replace("/", "--"))
-    snapshots = sorted((folder / "snapshots").glob("*"), key=lambda path: path.stat().st_mtime)
-    if not snapshots:
+@lru_cache(maxsize=1)
+def _model_links() -> dict[str, dict[str, dict[str, str]]]:
+    return json.loads(MODEL_LINKS.read_text(encoding="utf-8"))
+
+
+def _linked_snapshot(version: PythonVersion, role: str, expected_repo: str) -> Path:
+    """Resolve a model snapshot from the pinned repo/revision manifest.
+
+    ``models/model-links.json`` records the Hugging Face repo and commit SHA for
+    every role and Python version.  Using it here keeps runs reproducible even if
+    a newer snapshot has been downloaded into the same cache.
+    """
+    version = PythonVersion(version)
+    try:
+        entry = _model_links()[version.as_str()][role]
+    except KeyError as exc:
         raise FileNotFoundError(
-            f"Local model snapshot for {repo_id!r} was not found under {folder}. "
-            "Run scripts/fetch_models_312.py or extend it for the required Python version."
+            f"No pinned model entry for Python {version} role {role!r} in {MODEL_LINKS}. "
+            "Run scripts/build_model_links.py and scripts/fetch_models.py."
+        ) from exc
+    repo = entry["repo"]
+    revision = entry["sha"]
+    if repo != expected_repo:
+        raise RuntimeError(
+            f"Model pin mismatch for Python {version} role {role!r}: "
+            f"config expects {expected_repo!r}, {MODEL_LINKS.name} pins {repo!r}"
         )
-    return snapshots[-1]
+    path = HF_HUB / ("models--" + repo.replace("/", "--")) / "snapshots" / revision
+    if not path.is_dir():
+        raise FileNotFoundError(
+            f"Pinned model snapshot for {repo}@{revision} was not found at {path}. "
+            f"Run scripts/fetch_models.py --versions {version} --revision {revision}."
+        )
+    return path
 
 
 def _load_model(path: Path, auto_class):
+    weights = path / "model.safetensors"
+    if not weights.is_file():
+        raise FileNotFoundError(f"model.safetensors not found in pinned snapshot: {path}")
     config = AutoConfig.from_pretrained(path, local_files_only=True)
     model = auto_class.from_config(config)
-    state = load_file(str(path / "model.safetensors"), device="cpu")
+    state = load_file(str(weights), device="cpu")
     result = model.load_state_dict(state, strict=False)
     if result.unexpected_keys:
         raise RuntimeError(f"Unexpected weights in {path}: {result.unexpected_keys[:5]}")
@@ -64,12 +92,15 @@ def load_models(
     token: bool = False,
     device: torch.device | str | None = None,
 ) -> tuple[transformers.Pipeline, CacheTranslator]:
-    """Load a local model pack without calling transformers.from_pretrained.
+    """Load a pinned local model pack without calling transformers.from_pretrained.
 
     transformers 5.19.0 currently crashes with an access violation in
     ``from_pretrained`` on the portable Python 3.15 + torch 2.14.1 stack.
     Building the model from its config and loading safetensors explicitly
     produces the same weights and works on both CPU and CUDA.
+
+    Exactly one snapshot per repo is used: the commit SHA recorded in
+    ``models/model-links.json``.  Newer snapshots in the cache are ignored.
     """
     del redis_cache_server_ip, redis_port, token
 
@@ -83,10 +114,10 @@ def load_models(
     seg_config = config["SEGMENTATION_MODEL"]
     stmt_config = config["STATEMENT_MODEL"]
 
-    seg_path = _snapshot(seg_config["REPO"])
-    seg_tok_path = _snapshot(seg_config["TOKENIZER"])
-    stmt_path = _snapshot(stmt_config["REPO"])
-    stmt_tok_path = _snapshot(stmt_config["TOKENIZER"])
+    seg_path = _linked_snapshot(version, "segmenter", seg_config["REPO"])
+    seg_tok_path = _linked_snapshot(version, "segmenter_tokenizer", seg_config["TOKENIZER"])
+    stmt_path = _linked_snapshot(version, "statement", stmt_config["REPO"])
+    stmt_tok_path = _linked_snapshot(version, "statement_tokenizer", stmt_config["TOKENIZER"])
 
     segmenter_model = _load_model(seg_path, AutoModelForTokenClassification)
     segmenter_tokenizer = PreTrainedTokenizerFast(

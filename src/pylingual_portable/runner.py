@@ -2,18 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pylingual.decompiler as decompiler_module
-from pylingual.decompiler import DecompilerResult, decompile
-from pylingual.editable_bytecode import PYCFile
-
-from .models import load_models
-from .toolchain import compile_with_toolchain
-
-
-def install_local_components() -> None:
-    """Replace upstream network/uv/pyenv dependencies with local components."""
-    decompiler_module.load_models = load_models
-    decompiler_module.compile_version = compile_with_toolchain
+from .upstream import DecompilerResult, PYCFile, decompile, install_local_components
 
 
 def detect_version(pyc: Path) -> str:

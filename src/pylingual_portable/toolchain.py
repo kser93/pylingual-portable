@@ -4,10 +4,8 @@ import os
 import subprocess
 from pathlib import Path
 
-from pylingual.utils.generate_bytecode import CompileError
-from pylingual.utils.version import PythonVersion
-
 from .paths import ROOT, TOOLCHAINS, WORKSPACE
+from .upstream import CompileError, PythonVersion
 
 
 # Extend this mapping as new toolchain packs are installed.

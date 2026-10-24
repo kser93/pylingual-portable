@@ -11,6 +11,7 @@ from huggingface_hub import snapshot_download
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = ROOT / "vendor" / "pylingual" / "pylingual" / "decompiler_config.yaml"
+LINKS = ROOT / "models" / "model-links.json"
 CACHE = Path(os.environ.get("HF_HUB_CACHE", ROOT / "models" / "hf-cache" / "hub"))
 
 ALLOW_PATTERNS = {
@@ -49,11 +50,21 @@ def versions_from_config() -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Download PyLingual model packs into the local HF cache.")
     parser.add_argument("--versions", default="all", help="'all' or comma-separated versions, e.g. 3.12,3.13")
-    parser.add_argument("--revision", default="main")
+    parser.add_argument(
+        "--revision",
+        default=None,
+        help="HF revision to download; default: the pinned SHA from models/model-links.json",
+    )
     parser.add_argument("--force", action="store_true", help="Re-download files even if they are already cached")
     args = parser.parse_args()
 
     config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+    links: dict[str, dict[str, dict[str, str]]] = {}
+    if LINKS.exists():
+        try:
+            links = json.loads(LINKS.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            links = {}
     versions = versions_from_config() if args.versions == "all" else [v.strip() for v in args.versions.split(",")]
     CACHE.mkdir(parents=True, exist_ok=True)
     os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS", "1")
@@ -82,11 +93,12 @@ def main() -> int:
         }
         installed[version] = {}
         for role, repo_id in repos.items():
-            print(f"[{version}] {role}: {repo_id}@{args.revision}", flush=True)
+            revision = args.revision or links.get(version, {}).get(role, {}).get("sha", "main")
+            print(f"[{version}] {role}: {repo_id}@{revision}", flush=True)
             try:
                 path = snapshot_download(
                     repo_id=repo_id,
-                    revision=args.revision,
+                    revision=revision,
                     cache_dir=str(CACHE),
                     allow_patterns=ALLOW_PATTERNS[role],
                     force_download=args.force,

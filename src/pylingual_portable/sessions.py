@@ -8,12 +8,9 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pylingual.editable_bytecode import PYCFile
-from pylingual.equivalence_check import compare_pyc
-from pylingual.utils.generate_bytecode import CompileError
-
 from .paths import ROOT, WORKSPACE
 from .toolchain import compile_with_toolchain
+from .upstream import CompileError, PYCFile, compare_pyc
 
 
 SESSIONS = WORKSPACE / "sessions"

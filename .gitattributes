@@ -11,3 +11,6 @@
 *.pyc binary
 *.safetensors binary
 *.gif binary
+
+# Third-party source snapshots; keep GitHub language statistics focused on src/
+vendor/** linguist-vendored

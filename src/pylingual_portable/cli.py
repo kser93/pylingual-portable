@@ -1,18 +1,43 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from pathlib import Path
 
 from .paths import CONFIG, HF_HUB, ROOT, TOOLCHAINS
 from .runner import decompile_file
+from .upstream import assert_contract
 
 
 def _doctor() -> int:
     print("PYLINGUAL_HOME:", ROOT)
     print("Python:", sys.version.replace("\n", " "))
     print("Executable:", sys.executable)
+
+    components_path = ROOT / "vendor" / "components.json"
+    if components_path.exists():
+        print("Embedded components:")
+        try:
+            components = json.loads(components_path.read_text(encoding="utf-8")).get("components", {})
+        except json.JSONDecodeError as exc:
+            print("  invalid vendor/components.json:", exc)
+            return 1
+        for name, spec in components.items():
+            commit = str(spec.get("commit", "?"))[:12]
+            patches = spec.get("patches", [])
+            print(
+                f"  {name}: {spec.get('version', '?')} @ {commit} "
+                f"({spec.get('license', '?')}, patches={len(patches)})"
+            )
+
+    try:
+        assert_contract()
+    except Exception as exc:
+        print("Upstream contract: FAILED", repr(exc))
+        return 1
+    print("Upstream contract: ok")
 
     try:
         import torch
