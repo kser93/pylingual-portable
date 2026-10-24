@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      // Local stdio server. OpenCode exposes tools as pylingual_<tool>.
+      "pylingual": {
+        "type": "local",
+        "command": [
+          "cmd.exe",
+          "/c",
+          "pylingual.cmd",
+          "mcp",
+          "--stdio"
+        ],
+        "cwd": ".",
+        "codemode": false,
+        "protocol": "legacy",
+        "timeout": {
+          "startup": 60000,
+          "catalog": 60000,
+          "execution": 1800000
+        }
+      },
+
+      // Optional local Streamable HTTP endpoint. Start it separately:
+      //   .\pylingual.cmd mcp --transport streamable-http --port 7331
+      // This build has no multi-user auth; keep it on 127.0.0.1.
+      "pylingual-http": {
+        "type": "remote",
+        "url": "http://127.0.0.1:7331/mcp",
+        "oauth": false,
+        "disabled": true
+      }
+    }
+  }
+}

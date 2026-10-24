@@ -1,0 +1,34 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // PyLingual MCP server. codemode=false exposes the 13 tools directly as
+  // pylingual_<tool>; the agent is not allowed to use shell/edit/web tools.
+  "mcp": {
+    "timeout": {
+      "startup": 60000,
+      "catalog": 60000,
+      "execution": 1800000
+    },
+    "servers": {
+      "pylingual": {
+        "type": "local",
+        "command": ["cmd.exe", "/c", "pylingual.cmd", "mcp", "--stdio"],
+        "cwd": ".",
+        "codemode": false,
+        "protocol": "legacy",
+        "timeout": {
+          "startup": 60000,
+          "catalog": 60000,
+          "execution": 1800000
+        }
+      }
+    }
+  },
+
+  // Keep the default primary agent unchanged. Use /pylingual-* commands
+  // (they select the pylingual agent) or:
+  //   opencode run --agent pylingual ...
+  "permissions": [
+    { "action": "read", "resource": "*.env*", "effect": "deny" }
+  ]
+}

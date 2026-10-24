@@ -1,0 +1,247 @@
+{
+  "checked_at": "2026-10-24T13:44:03+00:00",
+  "updates": [],
+  "up_to_date": [
+    {
+      "version": "3.6",
+      "role": "segmenter",
+      "repo": "syssec-utd/py36-pylingual-v1-segmenter",
+      "sha": "548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc"
+    },
+    {
+      "version": "3.6",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py36-pylingual-v1-tokenizer",
+      "sha": "8a4d92aea20b5b10995e0a780e8f053434412c85"
+    },
+    {
+      "version": "3.6",
+      "role": "statement",
+      "repo": "syssec-utd/py36-pylingual-v1-statement",
+      "sha": "8275c1a0fd349e04845a7ba057c65f4b60089b0b"
+    },
+    {
+      "version": "3.6",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py36-pylingual-v1-tok",
+      "sha": "cb24f12611f3905d70e279495cb21332d57da8dc"
+    },
+    {
+      "version": "3.7",
+      "role": "segmenter",
+      "repo": "syssec-utd/py37-pylingual-v1-segmenter",
+      "sha": "dd836f029ed25a94ce1a1fff3a0671b89a759bd7"
+    },
+    {
+      "version": "3.7",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py37-pylingual-v1-tokenizer",
+      "sha": "d38e43632633a32bbc857bda8287a1728e2abadd"
+    },
+    {
+      "version": "3.7",
+      "role": "statement",
+      "repo": "syssec-utd/py37-pylingual-v1-statement",
+      "sha": "4d5d12bd03336acde4a592754dc2cb9c6b3dcccf"
+    },
+    {
+      "version": "3.7",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py37-pylingual-v1-tok",
+      "sha": "99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f"
+    },
+    {
+      "version": "3.8",
+      "role": "segmenter",
+      "repo": "syssec-utd/py38-pylingual-v1-segmenter",
+      "sha": "81741325d492898cd5de95e1447a9716d6c6839e"
+    },
+    {
+      "version": "3.8",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py38-pylingual-v1-tokenizer",
+      "sha": "fac69d02c43365d0cd7bbbb5272e9381efe7c4a3"
+    },
+    {
+      "version": "3.8",
+      "role": "statement",
+      "repo": "syssec-utd/py38-pylingual-v1.3-statement",
+      "sha": "cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99"
+    },
+    {
+      "version": "3.8",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py38-pylingual-v1.3-tok",
+      "sha": "9f01d46af359ad16458096ef0c187e6a9e6e2880"
+    },
+    {
+      "version": "3.9",
+      "role": "segmenter",
+      "repo": "syssec-utd/py39-pylingual-v1-segmenter",
+      "sha": "6778e1a4a5496f6251aee67da738eef793ce889c"
+    },
+    {
+      "version": "3.9",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py39-pylingual-v1-tokenizer",
+      "sha": "3c0360f0c418cc536a983c846e28701e83ec9855"
+    },
+    {
+      "version": "3.9",
+      "role": "statement",
+      "repo": "syssec-utd/py39-pylingual-v1-statement",
+      "sha": "81153a6fa5daef7497606b84016688735f5ba6f7"
+    },
+    {
+      "version": "3.9",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py39-pylingual-v1-tok",
+      "sha": "98f3245377d6b653f8a48fb0fd30c632934dd2d2"
+    },
+    {
+      "version": "3.10",
+      "role": "segmenter",
+      "repo": "syssec-utd/py310-pylingual-v1-segmenter",
+      "sha": "184078a32f25520176028e7b49b6f88b2cd8cd4b"
+    },
+    {
+      "version": "3.10",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py310-pylingual-v1-tokenizer",
+      "sha": "6c68edeee248306c29a6cf3e7bc56a145bcd328f"
+    },
+    {
+      "version": "3.10",
+      "role": "statement",
+      "repo": "syssec-utd/py310-pylingual-v1-statement",
+      "sha": "66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959"
+    },
+    {
+      "version": "3.10",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py310-pylingual-v1-tok",
+      "sha": "b3bb521bb1154d8855e7b275844e9b88dcd2e837"
+    },
+    {
+      "version": "3.11",
+      "role": "segmenter",
+      "repo": "syssec-utd/py311-pylingual-v1-segmenter",
+      "sha": "db194efaa37d0b6b46b5bf296e43b061f131c907"
+    },
+    {
+      "version": "3.11",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py311-pylingual-v1-tokenizer",
+      "sha": "369775723233c8ec67a05c254366c910e32a1374"
+    },
+    {
+      "version": "3.11",
+      "role": "statement",
+      "repo": "syssec-utd/py311-pylingual-v1-statement",
+      "sha": "5d359e2fdb452918967487e5f451cb29611a0971"
+    },
+    {
+      "version": "3.11",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py311-pylingual-v1-tok",
+      "sha": "6f868aa2873f782d79ed9ab85516c3c2422a5597"
+    },
+    {
+      "version": "3.12",
+      "role": "segmenter",
+      "repo": "syssec-utd/py312-pylingual-v1-segmenter",
+      "sha": "70caa2ed79f20e14835f28cdf874d552fb2ba767"
+    },
+    {
+      "version": "3.12",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py312-pylingual-v1-tokenizer",
+      "sha": "f4a5f8542a4fbc205e7aae701d73b182dd22f0a2"
+    },
+    {
+      "version": "3.12",
+      "role": "statement",
+      "repo": "syssec-utd/py312-pylingual-v1-statement",
+      "sha": "3a01f4ae752d7492350d0c0932c36849e59a6b1b"
+    },
+    {
+      "version": "3.12",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py312-pylingual-v1-tok",
+      "sha": "50fc56bdbf8ed6236334b1ed6bea9423b1bde205"
+    },
+    {
+      "version": "3.13",
+      "role": "segmenter",
+      "repo": "syssec-utd/py313-pylingual-v3-segmenter",
+      "sha": "b7cdaf8237695705feedc1da6fb90775647dce3d"
+    },
+    {
+      "version": "3.13",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py313-pylingual-v3-tokenizer",
+      "sha": "753a53e177167663ceba2f0ebcd93f7330a6ac3f"
+    },
+    {
+      "version": "3.13",
+      "role": "statement",
+      "repo": "syssec-utd/py313-pylingual-v3-statement",
+      "sha": "9251d889a7b54c8b255a44e22ba8b33d7fe5a30f"
+    },
+    {
+      "version": "3.13",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py313-pylingual-v3-tok",
+      "sha": "46e5d90e7d08078dc963cd91da8ec37eead2c666"
+    },
+    {
+      "version": "3.14",
+      "role": "segmenter",
+      "repo": "syssec-utd/py314-pylingual-v11-segmenter",
+      "sha": "556555a0d3d9bf64e6c8bbb628cecf7f9e228120"
+    },
+    {
+      "version": "3.14",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py314-pylingual-v11-tokenizer",
+      "sha": "95adb1031fb64e32c83aa8ca9b8ff9d026c7f321"
+    },
+    {
+      "version": "3.14",
+      "role": "statement",
+      "repo": "syssec-utd/py314-pylingual-v11-statement",
+      "sha": "b97d174943069f9ebd7621c9c0b96d93e8fc7254"
+    },
+    {
+      "version": "3.14",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py314-pylingual-v11-tok",
+      "sha": "6eae946a3dc79ee317aa471cdb27b3bc58426cfe"
+    },
+    {
+      "version": "3.15",
+      "role": "segmenter",
+      "repo": "syssec-utd/py315-pylingual-v7-segmenter",
+      "sha": "a474e699640fb12baec03d53c72fc54d765af0ea"
+    },
+    {
+      "version": "3.15",
+      "role": "segmenter_tokenizer",
+      "repo": "syssec-utd/py315-pylingual-v7-tokenizer",
+      "sha": "14101a4796017168a9e7404ae0431214c796be67"
+    },
+    {
+      "version": "3.15",
+      "role": "statement",
+      "repo": "syssec-utd/py315-pylingual-v7-statement",
+      "sha": "0d8255a53377118a439fea63aa5e13f798b20ff4"
+    },
+    {
+      "version": "3.15",
+      "role": "statement_tokenizer",
+      "repo": "syssec-utd/py315-pylingual-v7-tok",
+      "sha": "ca1273b8d5471bce9ec658a0b93221982776ca2b"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,28 @@
+# Portable runtime and downloaded artifacts (large, machine-specific)
+/runtime/
+/toolchains/
+/downloads/
+/workspace/
+
+# Model packs are local; keep only small manifests in the repository
+/models/
+!/models/
+/models/*
+!/models/installed.json
+!/models/model-links.json
+!/models/update-check.json
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Harness outputs; fixture .pyc files are build inputs and stay tracked
+/harness/results/
+!/harness/fixtures/pyc/
+!/harness/fixtures/pyc/**/*.pyc
+
+# Logs and temporary files
+*.log
+*.tmp

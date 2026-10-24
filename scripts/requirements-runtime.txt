@@ -1,0 +1,15 @@
+# Runtime dependencies pinned from vendor/pylingual/uv.lock.
+# torch==2.14.1+cu130 is installed separately from https://download.pytorch.org/whl/cu130
+transformers==5.19.0
+tokenizers==0.23.3
+numpy==2.5.4
+huggingface-hub==2.2.0
+networkx==3.7
+pydot==4.0.1
+pyyaml==6.0.3
+rich==15.0.0
+click==8.5.0
+mcp==2.3.0
+redis==8.1.0
+requests==2.34.2
+safetensors==0.8.0

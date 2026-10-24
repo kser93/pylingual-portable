@@ -1,0 +1,203 @@
+import os.path as osp
+
+import pytest
+import xdis
+from xdis import get_opcode
+from xdis.cross_dis import op_has_argument, xstack_effect
+from xdis.op_imports import get_opcode_module
+from xdis.version_info import (
+    PYTHON_IMPLEMENTATION,
+    PYTHON_VERSION_TRIPLE,
+    version_tuple_to_str,
+)
+
+
+def get_srcdir() -> str:
+    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
+    return osp.realpath(filename)
+
+
+srcdir = get_srcdir()
+opcode_stack_effect = [-100] * 256
+
+
+def test_stack_effect_fixed() -> None:
+    """Check stack effect of opcodes that don't vary in the stack effect.
+    This we get from tables that are derived the Python Interpreter C source.
+    Thanks to the Maynard project for this idea.
+    """
+    versions = (
+        (2, 5),
+        (2, 6),
+        (2, 7),
+        (3, 0),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (3, 4),
+        (3, 5),
+        (3, 6),
+        (3, 7),
+        (3, 8),
+        (3, 9),
+    )
+    for version in versions:
+        v_str = "%s%s" % (version[0], version[1])
+        opc = get_opcode(version, False)
+        se_file_py = osp.realpath(osp.join(srcdir, "stackeffect", "se%s.py" % v_str))
+        opcode_stack_effect = eval(open(se_file_py).read())
+        assert len(opcode_stack_effect) == 256
+
+        for opcode in range(256):
+            check_effect = opcode_stack_effect[opcode]
+            if check_effect == -100:
+                continue
+
+            opname = opc.opname[opcode]
+            # FIXME: not sure what's up with these in 2.6
+            if opname.startswith("SLICE"):
+                continue
+
+            if op_has_argument(opcode, opc):
+                effect = xstack_effect(opcode, opc, 10)
+            else:
+                effect = xstack_effect(opcode, opc)
+
+            pass
+
+        for (
+            opname,
+            opcode,
+        ) in opc.opmap.items():
+            if op_has_argument(opcode, opc):
+                continue
+            # These are are not in the C code although they are documented as opcodes
+            elif opname in ("STOP_CODE", "NOP"):
+                continue
+            # FIXME: not sure what's up with these in 2.6
+            elif opname.startswith("SLICE"):
+                continue
+
+            effect = xstack_effect(opcode, opc)
+            check_effect = opcode_stack_effect[opcode]
+            assert check_effect == effect, (
+                "in version %s %d (%s) not okay; effect xstack_effect is %d; C source has %d"
+                % (version_tuple_to_str(opc.version_tuple), opcode, opname, effect, check_effect)
+            )
+            # print("version %s: %d (%s) is good: effect %d" % (version, opcode, opname, effect))
+            pass
+        pass
+    return
+
+
+@pytest.mark.skipif(
+    xdis.PYTHON_VERSION_TRIPLE < (3, 4) or xdis.IS_PYPY or xdis.IS_GRAAL,
+    reason="Python version is before 3.4. Can't test",
+)
+def test_stack_effect_vs_dis() -> None:
+    import dis
+
+    def test_one(xdis_args, dis_args, has_arg: bool) -> None:
+
+        if opname.startswith("INSTRUMENTED"):
+            return
+        effect = xstack_effect(*xdis_args)
+        try:
+            check_effect = dis.stack_effect(*dis_args[:2])
+        except ValueError:
+            return
+        assert (
+            effect != -100
+        ), "%d (%s) needs adjusting; should be: should have effect %d" % (
+            opcode,
+            opname,
+            check_effect,
+        )
+        if has_arg:
+            op_val = "with operand %d" % dis_args[1]
+        else:
+            op_val = ""
+
+        assert check_effect == effect, "%d (%s) %s not okay; effect %d vs %d" % (
+            opcode,
+            opname,
+            op_val,
+            effect,
+            check_effect,
+        )
+        print("%d (%s) is good: effect %d" % (opcode, opname, effect))
+
+    opc = get_opcode_module(PYTHON_VERSION_TRIPLE, PYTHON_IMPLEMENTATION)
+    for (
+        opname,
+        opcode,
+    ) in opc.opmap.items():
+        if opname in ("EXTENDED_ARG", "NOP"):
+            continue
+        xdis_args = [opcode, opc]
+        dis_args = [opcode]
+
+        # TODO: if opcode takes an argument, we should vary the arg and try
+        # values in addition to 0 as done below.
+        if op_has_argument(opcode, opc):
+            xdis_args.append(0)
+            dis_args.append(0)
+            has_arg = True
+        else:
+            has_arg = False
+
+        if (
+            xdis.PYTHON_VERSION_TRIPLE >= (3, 7)
+            and opcode in opc.CONDITION_OPS
+            and opname
+            not in (
+                "INSTRUMENTED_POP_JUMP_IF_FALSE",
+                "INSTRUMENTED_POP_JUMP_IF_TRUE",
+                "JUMP_IF_FALSE_OR_POP",
+                "JUMP_IF_TRUE_OR_POP",
+                "POP_JUMP_IF_FALSE",
+                "POP_JUMP_IF_TRUE",
+                "SETUP_FINALLY",
+            )
+        ):
+            xdis_args.append(0)
+            dis_args.append(0)
+
+        if has_arg:
+            for i in range(0, 3):
+                dis_args[1] = xdis_args[2] = i
+                test_one(xdis_args, dis_args, has_arg)
+                pass
+            pass
+        else:
+            test_one(xdis_args, dis_args, has_arg)
+        pass
+    return
+
+
+def test_stack_effect_operand_dependent() -> None:
+    """Check stack effects of MAKE_FUNCTION, FORMAT_VALUE, and BUILD_SLICE
+    for operands whose bits change how many items are popped.
+    """
+    for version in ((3, 6), (3, 10)):
+        opc = get_opcode(version, False)
+        for oparg, effect in ((11, -4), (12, -3), (15, -5)):
+            assert xstack_effect(opc.opmap["MAKE_FUNCTION"], opc, oparg) == effect
+
+    for version in ((3, 11), (3, 12)):
+        opc = get_opcode(version, False)
+        for oparg, effect in ((3, -2), (4, -1), (8, -1), (9, -2), (10, -2), (11, -3), (15, -4)):
+            assert xstack_effect(opc.opmap["MAKE_FUNCTION"], opc, oparg) == effect
+
+    for version in ((3, 6), (3, 12)):
+        opc = get_opcode(version, False)
+        assert xstack_effect(opc.opmap["FORMAT_VALUE"], opc, 0) == 0
+        assert xstack_effect(opc.opmap["FORMAT_VALUE"], opc, 4) == -1
+
+    for version in ((3, 6), (3, 13)):
+        opc = get_opcode(version, False)
+        assert xstack_effect(opc.opmap["BUILD_SLICE"], opc, 3) == -2
+
+
+if __name__ == "__main__":
+    test_stack_effect_fixed()

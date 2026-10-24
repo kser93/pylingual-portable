@@ -1,0 +1,16 @@
+PyLingual Portable
+==================
+
+This local build includes source code from PyLingual:
+  https://github.com/syssec-utd/pylingual
+  License: GPL-3.0-only (see LICENSE)
+
+It also includes Python, PyTorch, Transformers, Tokenizers, NumPy, xdis,
+safetensors, and other third-party packages. Their licenses are distributed
+with the corresponding packages under runtime/python-3.15.1/Lib/site-packages.
+
+Model weights are downloaded from Hugging Face repositories under
+https://huggingface.co/syssec-utd. Refer to each model card for its license
+and provenance. The statement models are declared Apache-2.0; the segmenter
+model cards do not currently declare a license, so this build is intended for
+personal, non-commercial use only and is not to be redistributed.

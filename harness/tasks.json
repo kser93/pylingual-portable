@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "defaults": {
+    "version": "3.12",
+    "device": "auto",
+    "top_k": 10,
+    "timeout_seconds": 1800
+  },
+  "tasks": [
+    {
+      "id": "arithmetic",
+      "pyc": "harness/fixtures/pyc/3.12/arithmetic.pyc",
+      "version": "3.12",
+      "difficulty": "easy",
+      "description": "Arithmetic helpers with nested if/else and a conditional expression."
+    },
+    {
+      "id": "loops",
+      "pyc": "harness/fixtures/pyc/3.12/loops.pyc",
+      "version": "3.12",
+      "difficulty": "easy",
+      "description": "for/while loops, break/continue, loop else, and a set accumulator."
+    },
+    {
+      "id": "classes",
+      "pyc": "harness/fixtures/pyc/3.12/classes.pyc",
+      "version": "3.12",
+      "difficulty": "medium",
+      "description": "Classes, inheritance, property, staticmethod, classmethod, and super()."
+    },
+    {
+      "id": "exceptions",
+      "pyc": "harness/fixtures/pyc/3.12/exceptions.pyc",
+      "version": "3.12",
+      "difficulty": "medium",
+      "description": "try/except/else/finally, exception tuples, and default values."
+    },
+    {
+      "id": "closures",
+      "pyc": "harness/fixtures/pyc/3.12/closures.pyc",
+      "version": "3.12",
+      "difficulty": "medium",
+      "description": "Closures, nonlocal cells, decorators, *args/**kwargs, and nested functions."
+    },
+    {
+      "id": "comprehensions",
+      "pyc": "harness/fixtures/pyc/3.12/comprehensions.pyc",
+      "version": "3.12",
+      "difficulty": "medium",
+      "description": "Dict/list/set comprehensions, generator function, and lambda-free higher-order code."
+    }
+  ]
+}

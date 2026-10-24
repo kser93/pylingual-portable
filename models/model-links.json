@@ -1,0 +1,502 @@
+{
+  "3.6": {
+    "segmenter": {
+      "repo": "syssec-utd/py36-pylingual-v1-segmenter",
+      "sha": "548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc",
+      "repo_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter/tree/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter/resolve/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter/resolve/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter/resolve/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter/resolve/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-segmenter/resolve/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py36-pylingual-v1-tokenizer",
+      "sha": "8a4d92aea20b5b10995e0a780e8f053434412c85",
+      "repo_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tokenizer/tree/8a4d92aea20b5b10995e0a780e8f053434412c85",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tokenizer/resolve/8a4d92aea20b5b10995e0a780e8f053434412c85/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py36-pylingual-v1-statement",
+      "sha": "8275c1a0fd349e04845a7ba057c65f4b60089b0b",
+      "repo_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/tree/8275c1a0fd349e04845a7ba057c65f4b60089b0b",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-statement/resolve/8275c1a0fd349e04845a7ba057c65f4b60089b0b/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py36-pylingual-v1-tok",
+      "sha": "cb24f12611f3905d70e279495cb21332d57da8dc",
+      "repo_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok/tree/cb24f12611f3905d70e279495cb21332d57da8dc",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok/resolve/cb24f12611f3905d70e279495cb21332d57da8dc/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok/resolve/cb24f12611f3905d70e279495cb21332d57da8dc/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok/resolve/cb24f12611f3905d70e279495cb21332d57da8dc/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok/resolve/cb24f12611f3905d70e279495cb21332d57da8dc/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py36-pylingual-v1-tok/resolve/cb24f12611f3905d70e279495cb21332d57da8dc/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.7": {
+    "segmenter": {
+      "repo": "syssec-utd/py37-pylingual-v1-segmenter",
+      "sha": "dd836f029ed25a94ce1a1fff3a0671b89a759bd7",
+      "repo_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter/tree/dd836f029ed25a94ce1a1fff3a0671b89a759bd7",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter/resolve/dd836f029ed25a94ce1a1fff3a0671b89a759bd7/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter/resolve/dd836f029ed25a94ce1a1fff3a0671b89a759bd7/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter/resolve/dd836f029ed25a94ce1a1fff3a0671b89a759bd7/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter/resolve/dd836f029ed25a94ce1a1fff3a0671b89a759bd7/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-segmenter/resolve/dd836f029ed25a94ce1a1fff3a0671b89a759bd7/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py37-pylingual-v1-tokenizer",
+      "sha": "d38e43632633a32bbc857bda8287a1728e2abadd",
+      "repo_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tokenizer/tree/d38e43632633a32bbc857bda8287a1728e2abadd",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tokenizer/resolve/d38e43632633a32bbc857bda8287a1728e2abadd/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py37-pylingual-v1-statement",
+      "sha": "4d5d12bd03336acde4a592754dc2cb9c6b3dcccf",
+      "repo_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/tree/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-statement/resolve/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py37-pylingual-v1-tok",
+      "sha": "99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f",
+      "repo_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok/tree/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok/resolve/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok/resolve/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok/resolve/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok/resolve/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py37-pylingual-v1-tok/resolve/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.8": {
+    "segmenter": {
+      "repo": "syssec-utd/py38-pylingual-v1-segmenter",
+      "sha": "81741325d492898cd5de95e1447a9716d6c6839e",
+      "repo_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter/tree/81741325d492898cd5de95e1447a9716d6c6839e",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter/resolve/81741325d492898cd5de95e1447a9716d6c6839e/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter/resolve/81741325d492898cd5de95e1447a9716d6c6839e/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter/resolve/81741325d492898cd5de95e1447a9716d6c6839e/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter/resolve/81741325d492898cd5de95e1447a9716d6c6839e/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1-segmenter/resolve/81741325d492898cd5de95e1447a9716d6c6839e/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py38-pylingual-v1-tokenizer",
+      "sha": "fac69d02c43365d0cd7bbbb5272e9381efe7c4a3",
+      "repo_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1-tokenizer/tree/fac69d02c43365d0cd7bbbb5272e9381efe7c4a3",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1-tokenizer/resolve/fac69d02c43365d0cd7bbbb5272e9381efe7c4a3/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py38-pylingual-v1.3-statement",
+      "sha": "cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99",
+      "repo_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/tree/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-statement/resolve/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py38-pylingual-v1.3-tok",
+      "sha": "9f01d46af359ad16458096ef0c187e6a9e6e2880",
+      "repo_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok/tree/9f01d46af359ad16458096ef0c187e6a9e6e2880",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok/resolve/9f01d46af359ad16458096ef0c187e6a9e6e2880/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok/resolve/9f01d46af359ad16458096ef0c187e6a9e6e2880/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok/resolve/9f01d46af359ad16458096ef0c187e6a9e6e2880/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok/resolve/9f01d46af359ad16458096ef0c187e6a9e6e2880/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py38-pylingual-v1.3-tok/resolve/9f01d46af359ad16458096ef0c187e6a9e6e2880/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.9": {
+    "segmenter": {
+      "repo": "syssec-utd/py39-pylingual-v1-segmenter",
+      "sha": "6778e1a4a5496f6251aee67da738eef793ce889c",
+      "repo_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter/tree/6778e1a4a5496f6251aee67da738eef793ce889c",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter/resolve/6778e1a4a5496f6251aee67da738eef793ce889c/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter/resolve/6778e1a4a5496f6251aee67da738eef793ce889c/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter/resolve/6778e1a4a5496f6251aee67da738eef793ce889c/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter/resolve/6778e1a4a5496f6251aee67da738eef793ce889c/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-segmenter/resolve/6778e1a4a5496f6251aee67da738eef793ce889c/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py39-pylingual-v1-tokenizer",
+      "sha": "3c0360f0c418cc536a983c846e28701e83ec9855",
+      "repo_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tokenizer/tree/3c0360f0c418cc536a983c846e28701e83ec9855",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tokenizer/resolve/3c0360f0c418cc536a983c846e28701e83ec9855/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py39-pylingual-v1-statement",
+      "sha": "81153a6fa5daef7497606b84016688735f5ba6f7",
+      "repo_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/tree/81153a6fa5daef7497606b84016688735f5ba6f7",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-statement/resolve/81153a6fa5daef7497606b84016688735f5ba6f7/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py39-pylingual-v1-tok",
+      "sha": "98f3245377d6b653f8a48fb0fd30c632934dd2d2",
+      "repo_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok/tree/98f3245377d6b653f8a48fb0fd30c632934dd2d2",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok/resolve/98f3245377d6b653f8a48fb0fd30c632934dd2d2/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok/resolve/98f3245377d6b653f8a48fb0fd30c632934dd2d2/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok/resolve/98f3245377d6b653f8a48fb0fd30c632934dd2d2/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok/resolve/98f3245377d6b653f8a48fb0fd30c632934dd2d2/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py39-pylingual-v1-tok/resolve/98f3245377d6b653f8a48fb0fd30c632934dd2d2/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.10": {
+    "segmenter": {
+      "repo": "syssec-utd/py310-pylingual-v1-segmenter",
+      "sha": "184078a32f25520176028e7b49b6f88b2cd8cd4b",
+      "repo_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter/tree/184078a32f25520176028e7b49b6f88b2cd8cd4b",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter/resolve/184078a32f25520176028e7b49b6f88b2cd8cd4b/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter/resolve/184078a32f25520176028e7b49b6f88b2cd8cd4b/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter/resolve/184078a32f25520176028e7b49b6f88b2cd8cd4b/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter/resolve/184078a32f25520176028e7b49b6f88b2cd8cd4b/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-segmenter/resolve/184078a32f25520176028e7b49b6f88b2cd8cd4b/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py310-pylingual-v1-tokenizer",
+      "sha": "6c68edeee248306c29a6cf3e7bc56a145bcd328f",
+      "repo_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tokenizer/tree/6c68edeee248306c29a6cf3e7bc56a145bcd328f",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tokenizer/resolve/6c68edeee248306c29a6cf3e7bc56a145bcd328f/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py310-pylingual-v1-statement",
+      "sha": "66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959",
+      "repo_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/tree/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-statement/resolve/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py310-pylingual-v1-tok",
+      "sha": "b3bb521bb1154d8855e7b275844e9b88dcd2e837",
+      "repo_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok/tree/b3bb521bb1154d8855e7b275844e9b88dcd2e837",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok/resolve/b3bb521bb1154d8855e7b275844e9b88dcd2e837/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok/resolve/b3bb521bb1154d8855e7b275844e9b88dcd2e837/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok/resolve/b3bb521bb1154d8855e7b275844e9b88dcd2e837/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok/resolve/b3bb521bb1154d8855e7b275844e9b88dcd2e837/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py310-pylingual-v1-tok/resolve/b3bb521bb1154d8855e7b275844e9b88dcd2e837/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.11": {
+    "segmenter": {
+      "repo": "syssec-utd/py311-pylingual-v1-segmenter",
+      "sha": "db194efaa37d0b6b46b5bf296e43b061f131c907",
+      "repo_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter/tree/db194efaa37d0b6b46b5bf296e43b061f131c907",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter/resolve/db194efaa37d0b6b46b5bf296e43b061f131c907/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter/resolve/db194efaa37d0b6b46b5bf296e43b061f131c907/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter/resolve/db194efaa37d0b6b46b5bf296e43b061f131c907/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter/resolve/db194efaa37d0b6b46b5bf296e43b061f131c907/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-segmenter/resolve/db194efaa37d0b6b46b5bf296e43b061f131c907/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py311-pylingual-v1-tokenizer",
+      "sha": "369775723233c8ec67a05c254366c910e32a1374",
+      "repo_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tokenizer/tree/369775723233c8ec67a05c254366c910e32a1374",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tokenizer/resolve/369775723233c8ec67a05c254366c910e32a1374/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py311-pylingual-v1-statement",
+      "sha": "5d359e2fdb452918967487e5f451cb29611a0971",
+      "repo_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/tree/5d359e2fdb452918967487e5f451cb29611a0971",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-statement/resolve/5d359e2fdb452918967487e5f451cb29611a0971/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py311-pylingual-v1-tok",
+      "sha": "6f868aa2873f782d79ed9ab85516c3c2422a5597",
+      "repo_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok/tree/6f868aa2873f782d79ed9ab85516c3c2422a5597",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok/resolve/6f868aa2873f782d79ed9ab85516c3c2422a5597/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok/resolve/6f868aa2873f782d79ed9ab85516c3c2422a5597/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok/resolve/6f868aa2873f782d79ed9ab85516c3c2422a5597/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok/resolve/6f868aa2873f782d79ed9ab85516c3c2422a5597/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py311-pylingual-v1-tok/resolve/6f868aa2873f782d79ed9ab85516c3c2422a5597/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.12": {
+    "segmenter": {
+      "repo": "syssec-utd/py312-pylingual-v1-segmenter",
+      "sha": "70caa2ed79f20e14835f28cdf874d552fb2ba767",
+      "repo_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter/tree/70caa2ed79f20e14835f28cdf874d552fb2ba767",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter/resolve/70caa2ed79f20e14835f28cdf874d552fb2ba767/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter/resolve/70caa2ed79f20e14835f28cdf874d552fb2ba767/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter/resolve/70caa2ed79f20e14835f28cdf874d552fb2ba767/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter/resolve/70caa2ed79f20e14835f28cdf874d552fb2ba767/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-segmenter/resolve/70caa2ed79f20e14835f28cdf874d552fb2ba767/special_tokens_map.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py312-pylingual-v1-tokenizer",
+      "sha": "f4a5f8542a4fbc205e7aae701d73b182dd22f0a2",
+      "repo_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tokenizer/tree/f4a5f8542a4fbc205e7aae701d73b182dd22f0a2",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tokenizer/resolve/f4a5f8542a4fbc205e7aae701d73b182dd22f0a2/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py312-pylingual-v1-statement",
+      "sha": "3a01f4ae752d7492350d0c0932c36849e59a6b1b",
+      "repo_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/tree/3a01f4ae752d7492350d0c0932c36849e59a6b1b",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/model.safetensors?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-statement/resolve/3a01f4ae752d7492350d0c0932c36849e59a6b1b/special_tokens_map.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py312-pylingual-v1-tok",
+      "sha": "50fc56bdbf8ed6236334b1ed6bea9423b1bde205",
+      "repo_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok/tree/50fc56bdbf8ed6236334b1ed6bea9423b1bde205",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok/resolve/50fc56bdbf8ed6236334b1ed6bea9423b1bde205/tokenizer.json?download=true",
+        "merges.txt": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok/resolve/50fc56bdbf8ed6236334b1ed6bea9423b1bde205/merges.txt?download=true",
+        "vocab.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok/resolve/50fc56bdbf8ed6236334b1ed6bea9423b1bde205/vocab.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok/resolve/50fc56bdbf8ed6236334b1ed6bea9423b1bde205/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py312-pylingual-v1-tok/resolve/50fc56bdbf8ed6236334b1ed6bea9423b1bde205/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.13": {
+    "segmenter": {
+      "repo": "syssec-utd/py313-pylingual-v3-segmenter",
+      "sha": "b7cdaf8237695705feedc1da6fb90775647dce3d",
+      "repo_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-segmenter/tree/b7cdaf8237695705feedc1da6fb90775647dce3d",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-segmenter/resolve/b7cdaf8237695705feedc1da6fb90775647dce3d/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py313-pylingual-v3-segmenter/resolve/b7cdaf8237695705feedc1da6fb90775647dce3d/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-segmenter/resolve/b7cdaf8237695705feedc1da6fb90775647dce3d/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-segmenter/resolve/b7cdaf8237695705feedc1da6fb90775647dce3d/tokenizer_config.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py313-pylingual-v3-tokenizer",
+      "sha": "753a53e177167663ceba2f0ebcd93f7330a6ac3f",
+      "repo_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tokenizer/tree/753a53e177167663ceba2f0ebcd93f7330a6ac3f",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tokenizer/resolve/753a53e177167663ceba2f0ebcd93f7330a6ac3f/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py313-pylingual-v3-statement",
+      "sha": "9251d889a7b54c8b255a44e22ba8b33d7fe5a30f",
+      "repo_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-statement/tree/9251d889a7b54c8b255a44e22ba8b33d7fe5a30f",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-statement/resolve/9251d889a7b54c8b255a44e22ba8b33d7fe5a30f/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-statement/resolve/9251d889a7b54c8b255a44e22ba8b33d7fe5a30f/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py313-pylingual-v3-statement/resolve/9251d889a7b54c8b255a44e22ba8b33d7fe5a30f/model.safetensors?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-statement/resolve/9251d889a7b54c8b255a44e22ba8b33d7fe5a30f/tokenizer_config.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py313-pylingual-v3-tok",
+      "sha": "46e5d90e7d08078dc963cd91da8ec37eead2c666",
+      "repo_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tok/tree/46e5d90e7d08078dc963cd91da8ec37eead2c666",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tok/resolve/46e5d90e7d08078dc963cd91da8ec37eead2c666/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tok/resolve/46e5d90e7d08078dc963cd91da8ec37eead2c666/tokenizer_config.json?download=true",
+        "special_tokens_map.json": "https://huggingface.co/syssec-utd/py313-pylingual-v3-tok/resolve/46e5d90e7d08078dc963cd91da8ec37eead2c666/special_tokens_map.json?download=true"
+      }
+    }
+  },
+  "3.14": {
+    "segmenter": {
+      "repo": "syssec-utd/py314-pylingual-v11-segmenter",
+      "sha": "556555a0d3d9bf64e6c8bbb628cecf7f9e228120",
+      "repo_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-segmenter/tree/556555a0d3d9bf64e6c8bbb628cecf7f9e228120",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-segmenter/resolve/556555a0d3d9bf64e6c8bbb628cecf7f9e228120/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py314-pylingual-v11-segmenter/resolve/556555a0d3d9bf64e6c8bbb628cecf7f9e228120/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-segmenter/resolve/556555a0d3d9bf64e6c8bbb628cecf7f9e228120/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-segmenter/resolve/556555a0d3d9bf64e6c8bbb628cecf7f9e228120/tokenizer_config.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py314-pylingual-v11-tokenizer",
+      "sha": "95adb1031fb64e32c83aa8ca9b8ff9d026c7f321",
+      "repo_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tokenizer/tree/95adb1031fb64e32c83aa8ca9b8ff9d026c7f321",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tokenizer/resolve/95adb1031fb64e32c83aa8ca9b8ff9d026c7f321/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py314-pylingual-v11-statement",
+      "sha": "b97d174943069f9ebd7621c9c0b96d93e8fc7254",
+      "repo_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-statement/tree/b97d174943069f9ebd7621c9c0b96d93e8fc7254",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-statement/resolve/b97d174943069f9ebd7621c9c0b96d93e8fc7254/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-statement/resolve/b97d174943069f9ebd7621c9c0b96d93e8fc7254/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py314-pylingual-v11-statement/resolve/b97d174943069f9ebd7621c9c0b96d93e8fc7254/model.safetensors?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-statement/resolve/b97d174943069f9ebd7621c9c0b96d93e8fc7254/tokenizer_config.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py314-pylingual-v11-tok",
+      "sha": "6eae946a3dc79ee317aa471cdb27b3bc58426cfe",
+      "repo_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tok/tree/6eae946a3dc79ee317aa471cdb27b3bc58426cfe",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tok/resolve/6eae946a3dc79ee317aa471cdb27b3bc58426cfe/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py314-pylingual-v11-tok/resolve/6eae946a3dc79ee317aa471cdb27b3bc58426cfe/tokenizer_config.json?download=true"
+      }
+    }
+  },
+  "3.15": {
+    "segmenter": {
+      "repo": "syssec-utd/py315-pylingual-v7-segmenter",
+      "sha": "a474e699640fb12baec03d53c72fc54d765af0ea",
+      "repo_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-segmenter",
+      "tree_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-segmenter/tree/a474e699640fb12baec03d53c72fc54d765af0ea",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-segmenter/resolve/a474e699640fb12baec03d53c72fc54d765af0ea/config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py315-pylingual-v7-segmenter/resolve/a474e699640fb12baec03d53c72fc54d765af0ea/model.safetensors?download=true",
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-segmenter/resolve/a474e699640fb12baec03d53c72fc54d765af0ea/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-segmenter/resolve/a474e699640fb12baec03d53c72fc54d765af0ea/tokenizer_config.json?download=true"
+      }
+    },
+    "segmenter_tokenizer": {
+      "repo": "syssec-utd/py315-pylingual-v7-tokenizer",
+      "sha": "14101a4796017168a9e7404ae0431214c796be67",
+      "repo_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tokenizer",
+      "tree_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tokenizer/tree/14101a4796017168a9e7404ae0431214c796be67",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tokenizer/resolve/14101a4796017168a9e7404ae0431214c796be67/tokenizer.json?download=true"
+      }
+    },
+    "statement": {
+      "repo": "syssec-utd/py315-pylingual-v7-statement",
+      "sha": "0d8255a53377118a439fea63aa5e13f798b20ff4",
+      "repo_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-statement",
+      "tree_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-statement/tree/0d8255a53377118a439fea63aa5e13f798b20ff4",
+      "files": {
+        "config.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-statement/resolve/0d8255a53377118a439fea63aa5e13f798b20ff4/config.json?download=true",
+        "generation_config.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-statement/resolve/0d8255a53377118a439fea63aa5e13f798b20ff4/generation_config.json?download=true",
+        "model.safetensors": "https://huggingface.co/syssec-utd/py315-pylingual-v7-statement/resolve/0d8255a53377118a439fea63aa5e13f798b20ff4/model.safetensors?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-statement/resolve/0d8255a53377118a439fea63aa5e13f798b20ff4/tokenizer_config.json?download=true"
+      }
+    },
+    "statement_tokenizer": {
+      "repo": "syssec-utd/py315-pylingual-v7-tok",
+      "sha": "ca1273b8d5471bce9ec658a0b93221982776ca2b",
+      "repo_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tok",
+      "tree_url": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tok/tree/ca1273b8d5471bce9ec658a0b93221982776ca2b",
+      "files": {
+        "tokenizer.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tok/resolve/ca1273b8d5471bce9ec658a0b93221982776ca2b/tokenizer.json?download=true",
+        "tokenizer_config.json": "https://huggingface.co/syssec-utd/py315-pylingual-v7-tok/resolve/ca1273b8d5471bce9ec658a0b93221982776ca2b/tokenizer_config.json?download=true"
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "installed": {
+    "3.6": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py36-pylingual-v1-segmenter/snapshots/548dee461b1e0fada4e2a1d6ad2f3f2ad45758fc",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py36-pylingual-v1-tokenizer/snapshots/8a4d92aea20b5b10995e0a780e8f053434412c85",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py36-pylingual-v1-statement/snapshots/8275c1a0fd349e04845a7ba057c65f4b60089b0b",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py36-pylingual-v1-tok/snapshots/cb24f12611f3905d70e279495cb21332d57da8dc"
+    },
+    "3.7": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py37-pylingual-v1-segmenter/snapshots/dd836f029ed25a94ce1a1fff3a0671b89a759bd7",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py37-pylingual-v1-tokenizer/snapshots/d38e43632633a32bbc857bda8287a1728e2abadd",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py37-pylingual-v1-statement/snapshots/4d5d12bd03336acde4a592754dc2cb9c6b3dcccf",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py37-pylingual-v1-tok/snapshots/99f0d8df8fb49bf8d0c382c1c2645232dbf4a03f"
+    },
+    "3.8": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py38-pylingual-v1-segmenter/snapshots/81741325d492898cd5de95e1447a9716d6c6839e",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py38-pylingual-v1-tokenizer/snapshots/fac69d02c43365d0cd7bbbb5272e9381efe7c4a3",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py38-pylingual-v1.3-statement/snapshots/cddf48e00b5bc6ddfee1c4cc85dd1d64a709fd99",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py38-pylingual-v1.3-tok/snapshots/9f01d46af359ad16458096ef0c187e6a9e6e2880"
+    },
+    "3.9": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py39-pylingual-v1-segmenter/snapshots/6778e1a4a5496f6251aee67da738eef793ce889c",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py39-pylingual-v1-tokenizer/snapshots/3c0360f0c418cc536a983c846e28701e83ec9855",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py39-pylingual-v1-statement/snapshots/81153a6fa5daef7497606b84016688735f5ba6f7",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py39-pylingual-v1-tok/snapshots/98f3245377d6b653f8a48fb0fd30c632934dd2d2"
+    },
+    "3.10": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py310-pylingual-v1-segmenter/snapshots/184078a32f25520176028e7b49b6f88b2cd8cd4b",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py310-pylingual-v1-tokenizer/snapshots/6c68edeee248306c29a6cf3e7bc56a145bcd328f",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py310-pylingual-v1-statement/snapshots/66b8615e4a87efd1f4fe4f5472ce6f0e0ecdf959",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py310-pylingual-v1-tok/snapshots/b3bb521bb1154d8855e7b275844e9b88dcd2e837"
+    },
+    "3.11": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py311-pylingual-v1-segmenter/snapshots/db194efaa37d0b6b46b5bf296e43b061f131c907",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py311-pylingual-v1-tokenizer/snapshots/369775723233c8ec67a05c254366c910e32a1374",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py311-pylingual-v1-statement/snapshots/5d359e2fdb452918967487e5f451cb29611a0971",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py311-pylingual-v1-tok/snapshots/6f868aa2873f782d79ed9ab85516c3c2422a5597"
+    },
+    "3.12": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py312-pylingual-v1-segmenter/snapshots/70caa2ed79f20e14835f28cdf874d552fb2ba767",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py312-pylingual-v1-tokenizer/snapshots/f4a5f8542a4fbc205e7aae701d73b182dd22f0a2",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py312-pylingual-v1-statement/snapshots/3a01f4ae752d7492350d0c0932c36849e59a6b1b",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py312-pylingual-v1-tok/snapshots/50fc56bdbf8ed6236334b1ed6bea9423b1bde205"
+    },
+    "3.13": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py313-pylingual-v3-segmenter/snapshots/b7cdaf8237695705feedc1da6fb90775647dce3d",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py313-pylingual-v3-tokenizer/snapshots/753a53e177167663ceba2f0ebcd93f7330a6ac3f",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py313-pylingual-v3-statement/snapshots/9251d889a7b54c8b255a44e22ba8b33d7fe5a30f",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py313-pylingual-v3-tok/snapshots/46e5d90e7d08078dc963cd91da8ec37eead2c666"
+    },
+    "3.14": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py314-pylingual-v11-segmenter/snapshots/556555a0d3d9bf64e6c8bbb628cecf7f9e228120",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py314-pylingual-v11-tokenizer/snapshots/95adb1031fb64e32c83aa8ca9b8ff9d026c7f321",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py314-pylingual-v11-statement/snapshots/b97d174943069f9ebd7621c9c0b96d93e8fc7254",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py314-pylingual-v11-tok/snapshots/6eae946a3dc79ee317aa471cdb27b3bc58426cfe"
+    },
+    "3.15": {
+      "segmenter": "models/hf-cache/hub/models--syssec-utd--py315-pylingual-v7-segmenter/snapshots/a474e699640fb12baec03d53c72fc54d765af0ea",
+      "segmenter_tokenizer": "models/hf-cache/hub/models--syssec-utd--py315-pylingual-v7-tokenizer/snapshots/14101a4796017168a9e7404ae0431214c796be67",
+      "statement": "models/hf-cache/hub/models--syssec-utd--py315-pylingual-v7-statement/snapshots/0d8255a53377118a439fea63aa5e13f798b20ff4",
+      "statement_tokenizer": "models/hf-cache/hub/models--syssec-utd--py315-pylingual-v7-tok/snapshots/ca1273b8d5471bce9ec658a0b93221982776ca2b"
+    }
+  },
+  "failures": {}
+}
