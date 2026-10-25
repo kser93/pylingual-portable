@@ -1,4 +1,9 @@
-# PyLingual model download links
+# Ссылки на модели
+
+> **Сгенерированный справочник.** Файл содержит таблицы репозиториев, commit
+> SHA и прямых ссылок на файлы моделей. Для установки используйте
+> [`docs/installation.md`](installation.md); для повседневной работы —
+> [`docs/usage.md`](usage.md).
 
 Ссылки привязаны к commit SHA, который был актуален на момент генерации файла.
 Для каждой версии нужны четыре репозитория: segmenter, segmenter tokenizer, statement, statement tokenizer.
