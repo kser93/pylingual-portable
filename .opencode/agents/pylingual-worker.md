@@ -47,6 +47,11 @@ candidate source with the target CPython compiler and compares bytecode/CFG
 against the original `.pyc`. Plausible-looking source is not success. Only a
 verification result with `status: "perfect"` is success.
 
+At startup, if available, call `pylingual_get_agent_spec` with `role="worker"`
+and `pylingual_get_skill` with `name="pylingual-repair"`. Follow the returned
+contracts. The local instructions below remain authoritative if those tools are
+unavailable.
+
 ## Hard rules
 
 1. **PyLingual is the only allowed decompiler.** Do not install, download, invoke,

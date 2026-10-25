@@ -53,6 +53,10 @@ own the sequence: take the user's paths, run exactly one `pylingual-worker` for
 exactly one `.pyc`, wait for it to finish, verify the result, then move to the
 next file.
 
+At startup, if the MCP tool is available, call `pylingual_get_agent_manifest`
+and follow the returned orchestrator contract. The local instructions below
+remain authoritative if the tool is unavailable.
+
 ## Hard rules
 
 1. **PyLingual is the only allowed decompiler.** Never install, download, invoke,

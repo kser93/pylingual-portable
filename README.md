@@ -121,9 +121,16 @@ PyLingual.
 
 MCP-инструменты: `decompile`, `get_session`, `get_report`, `get_source`,
 `list_code_objects`, `get_code_object`, `verify_source`, `apply_patch`,
-`revert`, `export`, `finalize`, `get_capabilities`, `doctor`, `cancel`.
+`revert`, `export`, `finalize`, `get_capabilities`, `doctor`, `cancel`,
+`get_agent_manifest`, `get_agent_spec`, `get_skill`.
 Инструмент `finalize` записывает `.py` только при `status: "perfect"` и не
 перезаписывает существующие файлы.
+
+Сервер также отдаёт спецификацию агентов и skill-ов. Клиенты, поддерживающие
+MCP resources, читают `pylingual://manifest`, `pylingual://agents/orchestrator`,
+`pylingual://agents/worker` и `pylingual://skills/pylingual-repair`.
+Универсальный fallback для остальных клиентов — инструменты
+`get_agent_manifest`, `get_agent_spec` и `get_skill`.
 
 Подробное описание CLI и MCP: [`docs/usage.md`](docs/usage.md).
 
@@ -176,6 +183,7 @@ pylingual.cmd             лаунчер CLI
 .\scripts\python.cmd .\scripts\check_vendor.py
 .\scripts\python.cmd -m unittest tests.test_vendor_manifest
 .\scripts\python.cmd -m unittest tests.test_timestamp_patch
+.\scripts\python.cmd -m unittest tests.test_mcp_agent_specs
 .\scripts\python.cmd -m unittest tests.test_upstream_contract
 ```
 

@@ -96,7 +96,7 @@ HTTP-сервер не имеет авторизации и предназнач
 
 ## MCP
 
-MCP-сервер предоставляет 14 инструментов. Имена в OpenCode имеют префикс
+MCP-сервер предоставляет 17 инструментов. Имена в OpenCode имеют префикс
 `pylingual_`; в JSON-RPC и MCP-клиентах используются имена без префикса.
 
 | Инструмент | Назначение |
@@ -115,6 +115,33 @@ MCP-сервер предоставляет 14 инструментов. Име�
 | `get_capabilities` | версии, toolchain-ы, устройства и лимиты |
 | `doctor` | краткая диагностика runtime |
 | `cancel` | зарезервирован; текущая реализация синхронная |
+| `get_agent_manifest` | роли агентов, skills, цикл и правила |
+| `get_agent_spec` | контракт `orchestrator` или `worker` |
+| `get_skill` | спецификация skill-а `pylingual-repair` |
+
+### Спецификации агентов и skill-ов
+
+Сервер отдаёт спецификации по трём каналам:
+
+- **resources** для клиентов, которые их поддерживают:
+  - `pylingual://manifest`
+  - `pylingual://agents/orchestrator`
+  - `pylingual://agents/worker`
+  - `pylingual://skills/pylingual-repair`
+- **prompts** для клиентов, которые умеют получать prompt-шаблоны:
+  - `pylingual_worker_task(path, version)`
+  - `pylingual_orchestrator_task(paths)`
+  - `pylingual_repair_loop()`
+- **tools** как универсальный fallback:
+  - `get_agent_manifest()`
+  - `get_agent_spec(role="worker"|"orchestrator")`
+  - `get_skill(name="pylingual-repair")`
+
+Инструменты возвращают `content` (Markdown), `sha256` и `spec_version`.
+Манифест содержит цикл `decompile -> get_report -> apply_patch -> repeat until
+status == "perfect" -> finalize` и жёсткие правила: только PyLingual, без
+исполнения `.pyc`, полный исходник вместо diff, `finalize` только при
+`status: "perfect"`.
 
 ### `decompile`
 
