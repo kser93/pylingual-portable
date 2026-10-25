@@ -5,7 +5,7 @@
 внутри каталога проекта; системный Python и переменные среды Windows не
 изменяются.
 
-Установка состоит из следующих этапов:
+При ручной установке выполняются следующие этапы:
 
 1. клонирование репозитория вместе с submodules;
 2. установка Python 3.15.1 и зависимостей runtime;
@@ -48,7 +48,83 @@ tar --version
 Если `git` не найден, установите Git for Windows и откройте новый терминал.
 Если `tar` не найден, обновите Windows или используйте Windows 10 1803+.
 
-## Шаг 1. Клонирование репозитория
+## Быстрая установка
+
+Основной способ установки — `install.ps1`. Он скачивает с GitHub исходный
+репозиторий (если запущен в пустом каталоге), Python runtime, toolchain-ы и
+модели с Hugging Face, проверяет MCP-сервер и печатает готовый конфиг
+OpenCode.
+
+### Чистая машина
+
+Создайте пустой каталог и запустите установщик из временного файла:
+
+```powershell
+New-Item -ItemType Directory -Force D:\pylingual | Out-Null
+Set-Location D:\pylingual
+
+$installer = Join-Path $env:TEMP 'pylingual-install.ps1'
+Invoke-WebRequest `
+  -Uri 'https://raw.githubusercontent.com/kser93/pylingual-portable/main/install.ps1' `
+  -OutFile $installer
+
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File $installer -InstallDir (Get-Location).Path
+```
+
+Не скачивайте `install.ps1` прямо в целевой каталог: скрипт должен видеть
+пустой каталог, чтобы клонировать в него репозиторий.
+
+### Уже склонированный репозиторий
+
+```powershell
+Set-Location D:\pylingual-portable
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+### Проверка и служебные режимы
+
+```powershell
+# проверить существующую установку без скачивания
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -CheckOnly
+
+# показать план без изменений
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -DryRun
+
+# склонировать только исходники, без runtime и моделей
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -SourceOnly
+```
+
+Параметры:
+
+| Параметр | Назначение |
+|---|---|
+| `-InstallDir <path>` | целевой каталог; по умолчанию текущий |
+| `-RepoUrl <url>` | Git URL источника; по умолчанию GitHub-репозиторий проекта |
+| `-GitPath <path>` | явный путь к `git.exe`, если Git не в `PATH` |
+| `-SkipModels` | не скачивать модели |
+| `-SkipToolchains` | не устанавливать toolchain-ы |
+| `-SkipMcpProbe` | не запускать проверку MCP |
+| `-CheckOnly` | только проверить установку |
+| `-DryRun` | показать план без изменений |
+| `-SourceOnly` | только клонировать исходники и submodules |
+
+Установщик печатает project-local конфиг OpenCode, но не перезаписывает
+существующий `.opencode\opencode.jsonc`. Скопируйте или объедините секцию
+`mcp.servers.pylingual` вручную. Подробности — в разделе
+[«OpenCode: MCP на уровне проекта»](#opencode-mcp-на-уровне-проекта).
+
+MCP stdio-сервер не оставляется работать в фоне: им управляет агентская
+программа. Установщик запускает его на время probe, проверяет tools/resources/
+prompts и завершает процесс. Для постоянного HTTP-сервера используйте
+`pylingual.cmd mcp --transport streamable-http`.
+
+## Ручная установка
+
+Шаги ниже нужны, если установщик недоступен или требуется разобрать установку
+по частям.
+
+### Шаг 1. Клонирование репозитория
 
 Исходный код PyLingual и xdis подключён как git submodules. Клонируйте
 репозиторий с флагом `--recurse-submodules`:
@@ -80,7 +156,7 @@ git submodule update --init --recursive
 > **Примечание.** Архив GitHub «Download ZIP» не содержит содержимое
 > submodules. Для установки нужен именно `git clone`.
 
-## Шаг 2. Python runtime 3.15.1
+### Шаг 2. Python runtime 3.15.1
 
 Проект использует отдельный Python 3.15.1 из
 [python-build-standalone](https://github.com/astral-sh/python-build-standalone).
@@ -110,7 +186,7 @@ Test-Path .\runtime\python-3.15.1\python.exe
 распаковка прервалась и остался каталог `runtime\python`, удалите его и
 повторите распаковку.
 
-## Шаг 3. Зависимости runtime
+### Шаг 3. Зависимости runtime
 
 Скрипт `scripts\install_runtime.ps1` устанавливает CUDA-сборку PyTorch,
 зависимости из `scripts\requirements-runtime.txt` и xdis из закреплённого
@@ -140,7 +216,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install_runtime.ps
 `-ExecutionPolicy Bypass` применён только к текущему процессу. Системная
 политика выполнения не изменяется.
 
-## Шаг 4. Целевые интерпретаторы Python
+### Шаг 4. Целевые интерпретаторы Python
 
 Для проверки байткода нужны компиляторы целевых версий. Скрипт загружает
 Python 3.8–3.15 из python-build-standalone и официальные embeddable-сборки
@@ -162,7 +238,7 @@ Get-ChildItem .\toolchains -Directory | Select-Object Name
 В списке должны быть каталоги от `cpython-3.6.8-win-x64` до
 `cpython-3.15.1-win-x64`.
 
-## Шаг 5. Модели
+### Шаг 5. Модели
 
 Модели не входят в репозиторий. Они скачиваются из Hugging Face и
 привязываются к закреплённым commit SHA из `models\model-links.json`.
@@ -208,7 +284,7 @@ $env:HF_TOKEN = 'hf_...'
 После загрузки `models\installed.json` содержит пути к установленным
 snapshot-ам. Не удаляйте этот файл вручную.
 
-## Шаг 6. Проверка установки
+### Шаг 6. Проверка установки
 
 Запустите диагностику:
 
@@ -371,7 +447,7 @@ MCP-совместимый агент всё равно может получи�
 `pylingual_get_agent_manifest`, `pylingual_get_agent_spec` и
 `pylingual_get_skill`.
 
-## Шаг 7. Работа без сети
+## Работа без сети
 
 После установки runtime, toolchain-ов и моделей сеть не нужна. Лаунчер
 `pylingual.cmd` устанавливает `HF_HUB_OFFLINE=1` и `TRANSFORMERS_OFFLINE=1`
@@ -522,6 +598,22 @@ HF-кэш содержит длинные пути. Включите подде�
 ```
 
 Если Python не запускается, повторите шаг 2 и шаг 3.
+
+## Почему установка не через wheel
+
+Пакет `wheel`/`setuptools` здесь не заменяет установщик:
+
+- runtime, 10 toolchain-ов и model packs занимают около 17 ГБ и не являются
+  Python-пакетами;
+- `pip install` раскладывает файлы в `site-packages`, а проекту нужен
+  самодостаточный переносимый каталог;
+- модели распространяются отдельно от кода и имеют собственные условия
+  использования;
+- wheel может быть полезен только для разработки самой обвязки
+  `pylingual_portable`, но не для конечной установки.
+
+Поэтому конечная установка выполняется через `install.ps1`, а не через
+`pip install`.
 
 ## См. также
 

@@ -45,39 +45,40 @@ Runtime, toolchain-ы и модели занимают около 17 ГБ; ос�
 Подробная инструкция с объяснениями, проверками и устранением неполадок:
 [`docs/installation.md`](docs/installation.md).
 
-Краткая последовательность для чистой Windows-машины:
+Краткая установка в пустой каталог:
 
 ```powershell
-git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git
-Set-Location .\pylingual-portable
+New-Item -ItemType Directory -Force D:\pylingual | Out-Null
+Set-Location D:\pylingual
 
-# 1. Python runtime 3.15.1
-New-Item -ItemType Directory -Force .\downloads, .\runtime | Out-Null
-$release = '20261021'
-$url = "https://github.com/astral-sh/python-build-standalone/releases/download/$release/cpython-3.15.1%2B$release-x86_64-pc-windows-msvc-install_only_stripped.tar.gz"
-$archive = '.\downloads\cpython-3.15.1+20261021-win-x64-install_only_stripped.tar.gz'
-Invoke-WebRequest -Uri $url -OutFile $archive
-tar -xzf $archive -C .\runtime
-if (Test-Path .\runtime\python) {
-    Move-Item .\runtime\python .\runtime\python-3.15.1
-}
+$installer = Join-Path $env:TEMP 'pylingual-install.ps1'
+Invoke-WebRequest `
+  -Uri 'https://raw.githubusercontent.com/kser93/pylingual-portable/main/install.ps1' `
+  -OutFile $installer
 
-# 2. Зависимости runtime
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install_runtime.ps1
-
-# 3. Целевые интерпретаторы Python 3.6–3.15
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\fetch_all_toolchains.ps1
-
-# 4. Модели всех десяти версий
-.\scripts\python.cmd .\scripts\fetch_models.py --versions all
-
-# 5. Проверка
-.\pylingual.cmd doctor
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File $installer -InstallDir (Get-Location).Path
 ```
 
-Если `runtime\python-3.15.1\python.exe` уже существует, шаг 1 можно
-пропустить. Не используйте GitHub «Download ZIP»: архив не содержит
-содержимое submodules.
+Скрипт клонирует репозиторий с submodules, устанавливает Python 3.15.1,
+зависимости, toolchain-ы 3.6–3.15, скачивает модели с Hugging Face, проверяет
+MCP-сервер и печатает готовый project-local конфиг OpenCode.
+
+Если репозиторий уже склонирован:
+
+```powershell
+Set-Location .\pylingual-portable
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+Проверка уже установленной сборки без скачивания:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -CheckOnly
+```
+
+Не используйте GitHub «Download ZIP»: архив не содержит содержимое
+submodules.
 
 ## Быстрый старт
 
