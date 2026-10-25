@@ -794,7 +794,7 @@ flowchart LR
 ```text
 pylingual-portable/
   vendor/
-    pylingual/                 # upstream snapshot (GPL-3.0)
+    pylingual/                 # git submodule (GPL-3.0, pinned)
   src/
     pylingual_portable/
       api.py
@@ -2181,7 +2181,7 @@ pylingual-portable/
         context.py
         cfg.py
   vendor/
-    pylingual/          # upstream snapshot
+    pylingual/          # git submodule (pinned)
   patches/
   tests/
     unit/

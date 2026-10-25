@@ -2,6 +2,11 @@
 setlocal
 for %%I in ("%~dp0..") do set "ROOT=%%~fI"
 set "PYLINGUAL_HOME=%ROOT%"
+if not exist "%ROOT%\vendor\pylingual\pylingual\__init__.py" (
+  >&2 echo [pylingual] Upstream submodules are not initialized.
+  >&2 echo [pylingual] Run: git submodule update --init --recursive
+  exit /b 1
+)
 set "PYTHONHOME=%ROOT%\runtime\python-3.15.1"
 set "PYTHONPATH=%ROOT%\src;%ROOT%\vendor\pylingual"
 set "PYTHONNOUSERSITE=1"

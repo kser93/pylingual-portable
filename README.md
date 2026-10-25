@@ -14,19 +14,37 @@ Windows x64: portable runtime установлен и проверен. Реал
 | torch | 2.14.1+cu130 (CUDA 13.0, cuDNN 9.24) |
 | transformers / tokenizers | 5.19.0 / 0.23.3 |
 | numpy / xdis | 2.5.4 / 6.3.1.dev0 |
-| PyLingual source | `vendor/pylingual` (upstream v0.1.0, commit `11a1516d`) |
+| PyLingual source | `vendor/pylingual` (submodule, upstream v0.1.0, commit `11a1516d`) |
 | Toolchains | `toolchains/cpython-*` для Python 3.6–3.15 |
 | Model packs | Python 3.6–3.15 (`models/hf-cache`, 10/10 complete) |
-| Local runner | `src/pylingual_portable`; upstream source — `vendor/pylingual` через `PYTHONPATH` (без training-зависимостей) |
+| Local runner | `src/pylingual_portable`; upstream source — `vendor/pylingual` (submodule) через `PYTHONPATH` (без training-зависимостей) |
 | OpenCode harness | `.opencode/` (agent/skill/commands/MCP), `harness/`, `scripts/opencode_harness.py` |
 
 GPU проверен на **NVIDIA GeForce RTX 5070 Ti**, compute capability 12.0: `torch.cuda.is_available() = True`, CUDA smoke прошёл. End-to-end decompile на тестовом файле дал **100% perfect для всех 10 версий Python 3.6–3.15**; Python 3.12 дополнительно проверен на CPU. `vendor/pylingual/test/Conditional.py` на 3.12 — 100% (43 code object-а). Проверен перенос всей сборки в другой каталог и запуск из другого `cwd` — работает без изменения путей.
 
 Все 10 model packs проверены: `segmenter` и `statement` `model.safetensors` присутствуют, размеры совпадают, `.part`/`.incomplete` отсутствуют. В этом окружении `hf-xet` зависал на старых репозиториях; скрипты используют `HF_HUB_DISABLE_XET=1`.
 
-### Встроенные upstream-компоненты
+### Upstream-компоненты (git submodules)
 
-`vendor/` содержит неизменённые копии сторонних компонентов. Версии, коммиты, лицензии и хэши деревьев зафиксированы в [`vendor/components.json`](vendor/components.json); процедура обновления и политика патчей — в [`vendor/UPSTREAM.md`](vendor/UPSTREAM.md).
+`vendor/pylingual` и `vendor/xdis-src` подключены как git submodules и
+зафиксированы на точных upstream-коммитах. Версии, коммиты, лицензии и хэши
+деревьев записаны в [`vendor/components.json`](vendor/components.json);
+процедура обновления и политика патчей — в [`vendor/UPSTREAM.md`](vendor/UPSTREAM.md).
+
+Клонирование вместе с подмодулями:
+
+```powershell
+git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git
+```
+
+Если репозиторий уже склонирован без подмодулей:
+
+```powershell
+git submodule update --init --recursive
+```
+
+Архив GitHub «Download ZIP» не содержит содержимое подмодулей — используйте
+`git clone` с `--recurse-submodules` или инициализируйте их вручную.
 
 | Компонент | Версия | Pin | Лицензия | Локальные патчи |
 |---|---|---|---|---|
@@ -35,12 +53,16 @@ GPU проверен на **NVIDIA GeForce RTX 5070 Ti**, compute capability 12.
 
 Интеграция с upstream сосредоточена в `src/pylingual_portable/upstream.py`: импорты, две runtime-замены (`load_models`, `compile_version`) и проверка контракта API. Исходники upstream не редактируются.
 
-Проверка целостности и контракта:
+Проверка целостности, пинов и контракта:
 
 ```powershell
 .\scripts\python.cmd .\scripts\check_vendor.py
 .\scripts\python.cmd -m unittest tests.test_upstream_contract
 ```
+
+`check_vendor.py` проверяет регистрацию в `.gitmodules`, HEAD каждого
+подмодуля, хэш содержимого и наличие лицензий. Пины со стороны Git показывает
+`git submodule status --recursive`.
 
 Модели привязаны к конкретным HF-ревизиям через `models/model-links.json`; `models.py` загружает только snapshot с указанным SHA и не выбирает «самый свежий» файл из кэша.
 

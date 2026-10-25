@@ -3,7 +3,7 @@ PyLingual Portable
 
 Copyright (C) 2026 PyLingual Portable contributors.
 
-This repository embeds unmodified upstream source:
+This repository references unmodified upstream source through git submodules:
 
   PyLingual 0.1.0
     https://github.com/syssec-utd/pylingual
@@ -18,8 +18,9 @@ This repository embeds unmodified upstream source:
     Local patches: none
 
 The portable wrapper under src/ is distributed under GPL-3.0 as a combined
-work. See vendor/components.json for machine-readable pins and tree hashes,
-and vendor/UPSTREAM.md for the sync and patch policy.
+work. See .gitmodules for submodule URLs, vendor/components.json for
+machine-readable pins and tree hashes, and vendor/UPSTREAM.md for the checkout,
+update, and patch policy.
 
 This repository also includes Python, PyTorch, Transformers, Tokenizers,
 NumPy, safetensors, and other third-party packages. Their licenses are

@@ -1,7 +1,25 @@
-# Embedded upstream components
+# Upstream components (git submodules)
 
-`vendor/` contains third-party source snapshots used by the portable wrapper.
-They are **not** authored by this project and must not be edited in place.
+`vendor/pylingual` and `vendor/xdis-src` are git submodules registered in the
+repository root `.gitmodules`. They are **not** authored by this project and
+must not be edited in place.
+
+## Checkout
+
+Clone the superproject together with its submodules:
+
+```powershell
+git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git
+```
+
+For an existing clone that has no submodule contents:
+
+```powershell
+git submodule update --init --recursive
+```
+
+A GitHub "Download ZIP" archive does not contain submodule contents. Use a Git
+clone, or initialize the submodules manually before running the launcher.
 
 ## Pins
 
@@ -10,8 +28,10 @@ They are **not** authored by this project and must not be edited in place.
 | PyLingual | 0.1.0 | tag `v0.1.0`, commit `11a1516d84a6c2aa71ec23fbd11e4b99dc8c4a86` | GPL-3.0-only | none |
 | xdis | 6.3.1.dev0 | commit `51e36c42a01a83d67f6530fdf7fbd42a0f387d86` | GPL-2.0-or-later | none |
 
-Machine-readable pins, licenses and tree hashes live in
-[`components.json`](components.json).
+Machine-readable pins, URLs, licenses, and tree hashes live in
+[`components.json`](components.json). The Git gitlink is the authoritative
+checkout pin; `components.json` duplicates it for tooling and integrity
+checking.
 
 ## Verification
 
@@ -19,38 +39,55 @@ Machine-readable pins, licenses and tree hashes live in
 .\scripts\python.cmd .\scripts\check_vendor.py
 ```
 
-The checker hashes every file under each component (relative path + normalized
-LF content) and compares the result with `tree_sha256` in `components.json`.
-It also checks that the license file exists and that every declared patch is
-present. It is fully offline.
+The checker is fully offline. It validates:
 
-The current snapshot was verified on 2026-10-24 against upstream checkouts:
+- that both component paths are registered in `.gitmodules` with the expected
+  upstream URL;
+- that each submodule is initialized and its checked-out HEAD matches the
+  pinned commit (read from the submodule `.git` file, without requiring a
+  `git` executable);
+- that every tracked file under the component matches `tree_sha256` in
+  `components.json` (the submodule `.git` marker is excluded);
+- that the license file exists and every declared patch is present.
 
-- `vendor/pylingual`: 150 files, byte-identical to PyLingual tag `v0.1.0`
-  (commit `11a1516d84a6c2aa71ec23fbd11e4b99dc8c4a86`).
-- `vendor/xdis-src`: 318 files (excluding `build/`, `dist/` and `*.egg-info`),
-  byte-identical to xdis commit
-  `51e36c42a01a83d67f6530fdf7fbd42a0f387d86`.
-- The `xdis` package installed into the portable runtime matches
-  `vendor/xdis-src/xdis` (apart from upstream `.gitignore` files).
+For the Git view of the same pins:
+
+```powershell
+git submodule status --recursive
+```
 
 ## Updating a component
 
 Updates are manual. There is no background check and no automatic apply.
 
-1. Fetch the upstream repository into a temporary directory.
-2. Check out the exact tag or commit to adopt.
-3. Compare it with the current `vendor/` tree and review the diff.
-4. Replace the vendored tree.
-5. Run `.\scripts\python.cmd .\scripts\check_vendor.py --update` to record the
-   new tree hash and date.
-6. Run the upstream contract test:
+1. Fetch the upstream repository and check out the exact tag or commit:
 
    ```powershell
+   $git = 'C:\Program Files\Git\cmd\git.exe'
+   & $git -C vendor/pylingual fetch origin --tags
+   & $git -C vendor/pylingual checkout --detach <commit>
+   ```
+
+2. Review the diff against the currently pinned tree.
+3. Stage the new gitlink and refresh the manifest:
+
+   ```powershell
+   & $git add vendor/pylingual
+   .\scripts\python.cmd .\scripts\check_vendor.py --update
+   ```
+
+   `--update` records the live submodule commit, tree hash, file count, and
+   verification date. Update `version` and `tag` in `components.json` by hand
+   when they change.
+
+4. Run the tests:
+
+   ```powershell
+   .\scripts\python.cmd -m unittest tests.test_vendor_manifest
    .\scripts\python.cmd -m unittest tests.test_upstream_contract
    ```
 
-7. Run a smoke decompilation for at least one affected Python version, with
+5. Run a smoke decompilation for at least one affected Python version, with
    exact verification, for example:
 
    ```powershell
@@ -58,8 +95,10 @@ Updates are manual. There is no background check and no automatic apply.
      -o .\workspace\tmp\arithmetic.py --version 3.12
    ```
 
-8. Update this file and `NOTICE` if the version, commit or license changed.
-9. Commit the vendor change and the updated manifest together.
+6. Update this file, `README.md`, and `NOTICE` if the version, commit, URL, or
+   license changed.
+7. Commit the gitlink, `.gitmodules` (when the URL changed), the manifest change,
+   and the documentation together.
 
 ## Patch policy
 
@@ -72,14 +111,21 @@ functions at runtime:
 - `pylingual.decompiler.compile_version` — local toolchains instead of
   `uv`/`pyenv`.
 
-If a source patch becomes unavoidable:
+Do not edit files inside a submodule. A dirty submodule makes the content hash
+fail and leaves the gitlink pointing at upstream, so the change would not be
+reproducible. If a source patch becomes unavoidable:
 
-1. Put it under `patches/<component>/0001-short-description.patch`.
-2. Record the path in `components.json` under the component's `patches` list.
-3. Apply it only in the build/sync step, not by hand-editing `vendor/`.
-4. Recompute the tree hash and document the reason in this file.
-5. If patches grow beyond a few files, switch to a maintained fork instead of
-   accumulating patches in the portable repository.
+1. Put it in a maintained fork.
+2. Point the `.gitmodules` URL at the fork and update `upstream` in
+   `components.json`.
+3. Pin the fork commit with `git submodule set-url` / `git add`, then run
+   `check_vendor.py --update`.
+4. Document the reason in this file and `NOTICE`.
+5. If patches grow beyond a few files, keep using the fork rather than
+   accumulating local edits in `vendor/`.
+
+The `patches` list in `components.json` remains part of the schema and is
+currently empty.
 
 ## Licenses
 
