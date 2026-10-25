@@ -1,0 +1,6 @@
+[submodule "pylingual"]
+	path = vendor/pylingual
+	url = https://github.com/syssec-utd/pylingual
+[submodule "xdis"]
+	path = vendor/xdis-src
+	url = https://github.com/rocky/python-xdis

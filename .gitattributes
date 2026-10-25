@@ -12,5 +12,8 @@
 *.safetensors binary
 *.gif binary
 
+# Git submodule configuration stays LF on every platform
+.gitmodules text eol=lf
+
 # Third-party source snapshots; keep GitHub language statistics focused on src/
 vendor/** linguist-vendored

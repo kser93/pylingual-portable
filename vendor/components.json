@@ -1,10 +1,11 @@
 {
   "schema": 1,
   "algorithm": "sha256-tree-v1",
-  "verified_at": "2026-10-24",
+  "verified_at": "2026-10-25",
   "components": {
     "pylingual": {
       "path": "vendor/pylingual",
+      "kind": "git-submodule",
       "upstream": "https://github.com/syssec-utd/pylingual",
       "version": "0.1.0",
       "tag": "v0.1.0",
@@ -27,6 +28,7 @@
     },
     "xdis": {
       "path": "vendor/xdis-src",
+      "kind": "git-submodule",
       "upstream": "https://github.com/rocky/python-xdis",
       "version": "6.3.1.dev0",
       "commit": "51e36c42a01a83d67f6530fdf7fbd42a0f387d86",
