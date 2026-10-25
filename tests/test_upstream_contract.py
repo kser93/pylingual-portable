@@ -19,6 +19,16 @@ class UpstreamContractTest(unittest.TestCase):
         self.assertIs(decompiler_module.load_models, models.load_models)
         self.assertIs(decompiler_module.compile_version, toolchain.compile_with_toolchain)
 
+    def test_none_timestamp_patch_is_installed(self) -> None:
+        install_local_components()
+        self.assertTrue(
+            getattr(
+                decompiler_module.Decompiler.run_cflow_reconstruction,
+                "_pylingual_portable_patch",
+                False,
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

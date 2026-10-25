@@ -115,13 +115,17 @@ Updates are manual. There is no background check and no automatic apply.
 ## Patch policy
 
 The preferred state is **zero patches**. The portable wrapper integrates with
-upstream through `src/pylingual_portable/upstream.py`, which replaces only two
+upstream through `src/pylingual_portable/upstream.py`, which replaces three
 functions at runtime:
 
 - `pylingual.decompiler.load_models` — local safetensors snapshots instead of
   `transformers.from_pretrained`;
 - `pylingual.decompiler.compile_version` — local toolchains instead of
-  `uv`/`pyenv`.
+  `uv`/`pyenv`;
+- `pylingual.decompiler.Decompiler.run_cflow_reconstruction` — guards the
+  cosmetic source-timestamp header for hash-based `.pyc` files where xdis
+  reports `timestamp=None`; the real timestamp stays `None` and the header
+  says `unknown (hash-based pyc)`.
 
 Do not edit files inside a submodule. A dirty submodule makes the content hash
 fail and leaves the gitlink pointing at upstream, so the change would not be

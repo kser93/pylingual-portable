@@ -1,10 +1,11 @@
 """Single integration point for the embedded PyLingual upstream components.
 
 All imports of :mod:`pylingual` used by the portable wrapper go through this
-module.  The upstream source itself is never edited; only two functions are
-replaced at runtime (``load_models`` and ``compile_version``) so that the
-decompiler can run fully offline with local model snapshots and local Python
-toolchains.
+module.  The upstream source itself is never edited; only three functions are
+replaced at runtime (``load_models``, ``compile_version`` and the
+control-flow header writer) so that the decompiler can run fully offline with
+local model snapshots, local Python toolchains, and hash-based ``.pyc`` files
+that have no source timestamp.
 
 Exports are resolved lazily (PEP 562), so importing :mod:`pylingual_portable`
 does not pull in torch/transformers unless a caller actually asks for a heavy
@@ -62,6 +63,37 @@ def _require_parameters(obj: Any, required: tuple[str, ...], label: str) -> list
     return []
 
 
+def _wrap_run_cflow_reconstruction(original: Any) -> Any:
+    """Guard upstream's timestamp header for hash-based ``.pyc`` files.
+
+    ``xdis`` returns ``timestamp=None`` for hash-based bytecode.  Upstream
+    passes that value to ``datetime.fromtimestamp`` while writing a cosmetic
+    header line, which raises ``TypeError`` before verification starts.  Use a
+    temporary numeric placeholder and replace the rendered header afterwards;
+    the real ``PYCFile.timestamp`` stays ``None``.
+    """
+
+    @functools.wraps(original)
+    def run_cflow_reconstruction(self: Any) -> None:
+        if self.pyc.timestamp is None:
+            self.pyc.timestamp = 0
+            try:
+                original(self)
+            finally:
+                self.pyc.timestamp = None
+            self.source_context.header_lines = [
+                line.with_line("# Source timestamp: unknown (hash-based pyc)")
+                if line.line.startswith("# Source timestamp:")
+                else line
+                for line in self.source_context.header_lines
+            ]
+            return
+        original(self)
+
+    run_cflow_reconstruction._pylingual_portable_patch = True
+    return run_cflow_reconstruction
+
+
 @functools.lru_cache(maxsize=1)
 def assert_contract() -> dict[str, Any]:
     """Fail fast if upstream changes the API surface the wrapper relies on.
@@ -103,6 +135,12 @@ def assert_contract() -> dict[str, Any]:
     for attribute in ("load_models", "compile_version"):
         if not hasattr(decompiler_module, attribute):
             errors.append(f"pylingual.decompiler: missing monkeypatch target: {attribute}")
+    decompiler_class = getattr(decompiler_module, "Decompiler", None)
+    if not hasattr(decompiler_class, "run_cflow_reconstruction"):
+        errors.append(
+            "pylingual.decompiler.Decompiler: missing monkeypatch target: "
+            "run_cflow_reconstruction"
+        )
 
     if not hasattr(PYCFile, "save"):
         errors.append("PYCFile: missing method: save")
@@ -120,6 +158,7 @@ def assert_contract() -> dict[str, Any]:
             "pylingual.decompiler.decompile",
             "pylingual.decompiler.load_models",
             "pylingual.decompiler.compile_version",
+            "pylingual.decompiler.Decompiler.run_cflow_reconstruction",
             "pylingual.equivalence_check.compare_pyc",
             "pylingual.editable_bytecode.PYCFile",
             "pylingual.models.CacheTranslator",
@@ -143,3 +182,13 @@ def install_local_components() -> None:
     assert_contract()
     decompiler_module.load_models = load_models
     decompiler_module.compile_version = compile_with_toolchain
+    if not getattr(
+        decompiler_module.Decompiler.run_cflow_reconstruction,
+        "_pylingual_portable_patch",
+        False,
+    ):
+        decompiler_module.Decompiler.run_cflow_reconstruction = (
+            _wrap_run_cflow_reconstruction(
+                decompiler_module.Decompiler.run_cflow_reconstruction
+            )
+        )

@@ -51,13 +51,14 @@ git submodule update --init --recursive
 | PyLingual | 0.1.0 | tag `v0.1.0`, commit `11a1516d...` | GPL-3.0-only | нет |
 | xdis | 6.3.1.dev0 | commit `51e36c42...` | GPL-2.0-or-later | нет |
 
-Интеграция с upstream сосредоточена в `src/pylingual_portable/upstream.py`: импорты, две runtime-замены (`load_models`, `compile_version`) и проверка контракта API. Исходники upstream не редактируются.
+Интеграция с upstream сосредоточена в `src/pylingual_portable/upstream.py`: импорты, три runtime-замены (`load_models`, `compile_version`, `Decompiler.run_cflow_reconstruction`) и проверка контракта API. Третья замена обрабатывает hash-based `.pyc` без timestamp (`timestamp=None`), не меняя байткод. Исходники upstream не редактируются.
 
 Проверка целостности, пинов и контракта:
 
 ```powershell
 .\scripts\python.cmd .\scripts\check_vendor.py
 .\scripts\python.cmd -m unittest tests.test_vendor_manifest
+.\scripts\python.cmd -m unittest tests.test_timestamp_patch
 .\scripts\python.cmd -m unittest tests.test_upstream_contract
 ```
 
