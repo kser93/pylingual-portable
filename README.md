@@ -43,8 +43,8 @@ git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git
 git submodule update --init --recursive
 ```
 
-Архив GitHub «Download ZIP» не содержит содержимое подмодулей — используйте
-`git clone` с `--recurse-submodules` или инициализируйте их вручную.
+Архив GitHub «Download ZIP» не содержит содержимое подмодулей и не подходит
+для запуска — используйте `git clone` с `--recurse-submodules`.
 
 | Компонент | Версия | Pin | Лицензия | Локальные патчи |
 |---|---|---|---|---|
@@ -57,11 +57,13 @@ git submodule update --init --recursive
 
 ```powershell
 .\scripts\python.cmd .\scripts\check_vendor.py
+.\scripts\python.cmd -m unittest tests.test_vendor_manifest
 .\scripts\python.cmd -m unittest tests.test_upstream_contract
 ```
 
 `check_vendor.py` проверяет регистрацию в `.gitmodules`, HEAD каждого
-подмодуля, хэш содержимого и наличие лицензий. Пины со стороны Git показывает
+подмодуля, gitlink в суперпроекте (если доступен Git), хэш содержимого и
+наличие лицензий. Пины со стороны Git показывает
 `git submodule status --recursive`.
 
 Модели привязаны к конкретным HF-ревизиям через `models/model-links.json`; `models.py` загружает только snapshot с указанным SHA и не выбирает «самый свежий» файл из кэша.

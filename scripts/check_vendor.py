@@ -3,12 +3,13 @@
 The manifest at ``vendor/components.json`` records the upstream repository,
 commit, license, patch list and a content hash for each component.  The
 checker validates the ``.gitmodules`` registration, the checked-out submodule
-HEAD, and the local tree.  It is intentionally offline: it never clones or
-downloads anything.
+HEAD, the superproject gitlink when Git is available, and the local tree.  It
+is intentionally offline: it never clones or downloads anything.
 
 Usage:
     python scripts/check_vendor.py
     python scripts/check_vendor.py --update   # manual, after a reviewed sync
+    python scripts/check_vendor.py --update --force   # explicit override
 """
 
 from __future__ import annotations
@@ -17,7 +18,10 @@ import argparse
 import fnmatch
 import hashlib
 import json
+import os
 import re
+import shutil
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -116,6 +120,82 @@ def _submodule_head(root: Path) -> str | None:
     return head if _HEX_SHA.fullmatch(head) else None
 
 
+def _git_executable() -> str | None:
+    """Locate git for optional gitlink and dirty-tree checks.
+
+    The checker never requires git.  When it is available, it additionally
+    verifies that the superproject gitlink is staged and that a submodule
+    checkout is clean before ``--update`` records it.
+    """
+    candidates = [
+        os.environ.get("PYLINGUAL_GIT"),
+        shutil.which("git"),
+        r"C:\Program Files\Git\cmd\git.exe",
+        r"C:\Program Files (x86)\Git\cmd\git.exe",
+    ]
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file():
+            return str(candidate)
+    return None
+
+
+def _gitlink_from_ls_tree(output: str, path: str) -> str | None:
+    """Extract the submodule commit for ``path`` from ``git ls-tree`` output."""
+    for line in output.splitlines():
+        name, separator, rest = line.partition("\t")
+        if not separator or rest != path:
+            continue
+        fields = name.split()
+        if len(fields) >= 3 and fields[0] == "160000" and fields[1] == "commit":
+            commit = fields[2]
+            if _HEX_SHA.fullmatch(commit):
+                return commit
+    return None
+
+
+def _gitlink_commit(root: Path, path: str, git: str | None) -> str | None:
+    """Read the superproject gitlink for ``path`` at HEAD."""
+    if not git:
+        return None
+    try:
+        completed = subprocess.run(
+            [git, "ls-tree", "HEAD", "--", path],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if completed.returncode != 0:
+        return None
+    return _gitlink_from_ls_tree(completed.stdout, path)
+
+
+def _submodule_dirty(root: Path, git: str | None) -> bool | None:
+    """Return whether a submodule has tracked or untracked changes.
+
+    Returns ``None`` when git is unavailable, so callers can fall back to the
+    content hash.
+    """
+    if not git:
+        return None
+    try:
+        completed = subprocess.run(
+            [git, "-C", str(root), "status", "--porcelain", "--untracked-files=all"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if completed.returncode != 0:
+        return None
+    return bool(completed.stdout.strip())
+
+
 def _iter_files(root: Path, spec: dict[str, Any]) -> list[Path]:
     paths = [
         path
@@ -147,12 +227,16 @@ def _check_component(
     spec: dict[str, Any],
     *,
     update: bool,
+    force: bool,
     submodule_urls: dict[str, str],
+    git: str | None,
 ) -> tuple[dict[str, Any], list[str]]:
     errors: list[str] = []
     root = ROOT / spec["path"]
     is_submodule = spec.get("kind") == "git-submodule"
+    pinned_commit = str(spec.get("commit", ""))
     head: str | None = None
+    gitlink: str | None = None
     summary: dict[str, Any] = {
         "path": spec["path"],
         "kind": spec.get("kind", "snapshot"),
@@ -162,7 +246,14 @@ def _check_component(
         "patches": len(spec.get("patches", [])),
     }
     if not root.is_dir():
-        errors.append(f"{name}: component path does not exist: {spec['path']}")
+        hint = (
+            " (run: git submodule update --init --recursive)"
+            if is_submodule
+            else ""
+        )
+        errors.append(
+            f"{name}: component path does not exist: {spec['path']}{hint}"
+        )
         return summary, errors
 
     if is_submodule:
@@ -184,13 +275,45 @@ def _check_component(
                 f"{name}: submodule is not initialized "
                 f"(run: git submodule update --init --recursive)"
             )
-        elif update:
-            spec["commit"] = head
+        if git:
+            gitlink = _gitlink_commit(ROOT, spec["path"], git)
+            if gitlink is None:
+                errors.append(
+                    f"{name}: {spec['path']} is not a gitlink in HEAD "
+                    f"(stage it with: git add {spec['path']})"
+                )
+            elif head is not None and gitlink != head:
+                errors.append(
+                    f"{name}: superproject gitlink {gitlink} does not match "
+                    f"submodule HEAD {head} "
+                    f"(stage it with: git add {spec['path']})"
+                )
 
     actual, count = tree_hash(root, spec)
     if update:
-        spec["tree_sha256"] = actual
-        spec["file_count"] = count
+        if is_submodule:
+            if head is not None:
+                dirty = _submodule_dirty(root, git)
+                if dirty is None:
+                    dirty = (
+                        bool(spec.get("tree_sha256"))
+                        and head == pinned_commit
+                        and actual != spec.get("tree_sha256")
+                    )
+                if dirty and not force:
+                    errors.append(
+                        f"{name}: working tree differs from pinned commit "
+                        f"{pinned_commit}; refusing to update "
+                        f"(use --force to record a modified tree)"
+                    )
+                else:
+                    spec["commit"] = head
+                    spec["tree_sha256"] = actual
+                    spec["file_count"] = count
+        else:
+            spec["tree_sha256"] = actual
+            spec["file_count"] = count
+
     expected = spec.get("tree_sha256")
     if not expected:
         errors.append(f"{name}: tree_sha256 is not pinned in {MANIFEST}")
@@ -223,6 +346,7 @@ def _check_component(
         {
             "commit": spec.get("commit"),
             "head": head,
+            "gitlink": gitlink,
             "tree_sha256": actual,
             "files": count,
         }
@@ -230,8 +354,14 @@ def _check_component(
     return summary, errors
 
 
-def check_components(*, update: bool = False) -> dict[str, Any]:
+def check_components(
+    *,
+    update: bool = False,
+    force: bool = False,
+    git: str | None = None,
+) -> dict[str, Any]:
     errors: list[str] = []
+    git = git if git is not None else _git_executable()
     if not MANIFEST.is_file():
         return {
             "ok": False,
@@ -260,12 +390,17 @@ def check_components(*, update: bool = False) -> dict[str, Any]:
     submodule_urls = _submodule_urls(ROOT / ".gitmodules")
     for name, spec in raw_components.items():
         summary, component_errors = _check_component(
-            name, spec, update=update, submodule_urls=submodule_urls
+            name,
+            spec,
+            update=update,
+            force=force,
+            submodule_urls=submodule_urls,
+            git=git,
         )
         summaries[name] = summary
         errors.extend(component_errors)
 
-    if update:
+    if update and (not errors or force):
         manifest["verified_at"] = datetime.now(timezone.utc).date().isoformat()
         MANIFEST.write_text(
             json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
@@ -276,6 +411,7 @@ def check_components(*, update: bool = False) -> dict[str, Any]:
         "ok": not errors,
         "manifest": str(MANIFEST),
         "algorithm": ALGORITHM,
+        "git": git,
         "components": summaries,
         "errors": errors,
     }
@@ -288,9 +424,20 @@ def main() -> int:
         action="store_true",
         help="record the current submodule commit and tree hash (manual, after a reviewed sync)",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="with --update, write even when checks fail or the tree is dirty",
+    )
+    parser.add_argument(
+        "--git",
+        help="path to the git executable for gitlink and dirty-tree checks",
+    )
     args = parser.parse_args()
+    if args.git and not Path(args.git).is_file():
+        parser.error(f"git executable not found: {args.git}")
 
-    result = check_components(update=args.update)
+    result = check_components(update=args.update, force=args.force, git=args.git)
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0 if result["ok"] else 1
 

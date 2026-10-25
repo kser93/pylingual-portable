@@ -18,8 +18,8 @@ For an existing clone that has no submodule contents:
 git submodule update --init --recursive
 ```
 
-A GitHub "Download ZIP" archive does not contain submodule contents. Use a Git
-clone, or initialize the submodules manually before running the launcher.
+A GitHub "Download ZIP" archive does not contain submodule contents and cannot
+be initialized with Git. Use a Git clone instead.
 
 ## Pins
 
@@ -50,6 +50,10 @@ The checker is fully offline. It validates:
   `components.json` (the submodule `.git` marker is excluded);
 - that the license file exists and every declared patch is present.
 
+When a Git executable is available (on `PATH`, via `PYLINGUAL_GIT`, or via
+`--git`), the checker also verifies that the superproject gitlink matches the
+submodule HEAD and, for `--update`, that the submodule working tree is clean.
+
 For the Git view of the same pins:
 
 ```powershell
@@ -72,13 +76,15 @@ Updates are manual. There is no background check and no automatic apply.
 3. Stage the new gitlink and refresh the manifest:
 
    ```powershell
+   $git = 'C:\Program Files\Git\cmd\git.exe'
    & $git add vendor/pylingual
    .\scripts\python.cmd .\scripts\check_vendor.py --update
    ```
 
    `--update` records the live submodule commit, tree hash, file count, and
-   verification date. Update `version` and `tag` in `components.json` by hand
-   when they change.
+   verification date. It refuses to write when checks fail or when the
+   submodule working tree is dirty; `--force` is an explicit override. Update
+   `version` and `tag` in `components.json` by hand when they change.
 
 4. Run the tests:
 
@@ -97,8 +103,14 @@ Updates are manual. There is no background check and no automatic apply.
 
 6. Update this file, `README.md`, and `NOTICE` if the version, commit, URL, or
    license changed.
-7. Commit the gitlink, `.gitmodules` (when the URL changed), the manifest change,
-   and the documentation together.
+7. Stage and commit the gitlink, `.gitmodules` (when the URL changed), the
+   relative `components.json` change, and the documentation together:
+
+   ```powershell
+   $git = 'C:\Program Files\Git\cmd\git.exe'
+   & $git add .gitmodules vendor/pylingual vendor/xdis-src vendor/components.json
+   & $git commit -m "Update upstream submodule pins"
+   ```
 
 ## Patch policy
 

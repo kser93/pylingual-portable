@@ -43,10 +43,13 @@ duplicated source snapshots.
 - `scripts/check_vendor.py` checks:
   - the `.gitmodules` path/URL pair;
   - the submodule HEAD from its `.git` file (no git executable required);
-  - the content tree hash, excluding the submodule `.git` file;
+  - the superproject gitlink and dirty state when Git is available;
+  - the content tree hash, including every tracked file and excluding the
+    submodule `.git` file;
   - the license file.
 - `scripts/check_vendor.py --update` refreshes the commit, tree hash, and
-  verification date after a reviewed submodule checkout.
+  verification date after a reviewed submodule checkout. It writes only when
+  checks pass and refuses a dirty submodule unless `--force` is explicit.
 - `scripts/pylingual.cmd` prints an initialization hint when the PyLingual
   submodule is absent.
 - README, `vendor/UPSTREAM.md`, and `NOTICE` document recursive clone,

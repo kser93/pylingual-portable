@@ -173,14 +173,15 @@ Add `"kind": "git-submodule"` to both component objects in
 .\scripts\python.cmd .\scripts\check_vendor.py
 ```
 
-Expected: `"ok": true`, zero errors, file counts 150 and 318, unchanged tree hashes
-`847072…` and `868301…`.
+Expected: `"ok": true`, zero errors, file counts 150 and 1380, PyLingual tree hash
+unchanged (`847072…`), xdis hash recomputed (`c2035c…`) because tracked `.pyc`
+fixtures are now covered.
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
 Run: `.\scripts\python.cmd -m unittest tests.test_vendor_manifest -v`
 
-Expected: PASS (4 tests).
+Expected: PASS (8 tests).
 
 - [ ] **Step 8: Commit**
 
@@ -315,3 +316,18 @@ $git = 'C:\Program Files\Git\cmd\git.exe'
 ```
 
 Expected: push succeeds and the remote SHA equals `git rev-parse HEAD`.
+
+---
+
+## Post-review corrections
+
+A fresh-context review found that the initial checker excluded tracked xdis
+`.pyc` fixtures and that `--update` could bless a missing or dirty submodule.
+The implemented corrections are:
+
+- all tracked files are hashed (xdis: 1380 files; no `.pyc`/`.pyo` exclusions);
+- `--update` writes only when checks pass and refuses a dirty submodule unless
+  `--force` is explicit;
+- the superproject gitlink is checked when a Git executable is available;
+- regression tests cover tracked `.pyc` changes, gitlink parsing, packed refs,
+  and fail-closed updates (8 tests).

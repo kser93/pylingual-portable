@@ -9,6 +9,7 @@
 *.cmd text eol=crlf
 *.bat text eol=crlf
 *.pyc binary
+*.pyo binary
 *.safetensors binary
 *.gif binary
 

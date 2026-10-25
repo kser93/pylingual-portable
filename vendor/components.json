@@ -19,10 +19,7 @@
         ".pytest_cache",
         ".ruff_cache"
       ],
-      "exclude_globs": [
-        "*.pyc",
-        "*.pyo"
-      ],
+      "exclude_globs": [],
       "tree_sha256": "847072667cb1e6993472949c750b1527643bf03a7ec0593655604b91dead895d",
       "file_count": 150
     },
@@ -45,12 +42,10 @@
       ],
       "exclude_globs": [
         "*.egg-info",
-        "*.egg-info/**",
-        "*.pyc",
-        "*.pyo"
+        "*.egg-info/**"
       ],
-      "tree_sha256": "8683c01ce4f65f4d925e30301f35ea1ff8fb8a0a7196f7aa59548789026e211c",
-      "file_count": 318
+      "tree_sha256": "c2035c5f3b6d4b59c77ef00e8122d5250ffb3ebe20aee56eef3518f89f468d99",
+      "file_count": 1380
     }
   }
 }
