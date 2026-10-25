@@ -64,13 +64,16 @@ New-Item -ItemType Directory -Force D:\pylingual | Out-Null
 Set-Location D:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
-Invoke-WebRequest `
-  -Uri 'https://github.com/kser93/pylingual-portable/releases/latest/download/install.ps1' `
-  -OutFile $installer
+curl.exe -L --fail -o $installer `
+  'https://github.com/kser93/pylingual-portable/releases/latest/download/install.ps1'
 
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File $installer -InstallDir (Get-Location).Path
 ```
+
+`curl.exe` входит в Windows 10 версии 1803 и новее. В PowerShell 5.1 команда
+`curl` — это алиас `Invoke-WebRequest`; он не справляется с двойным
+перенаправлением GitHub на файл релиза. Поэтому вызывайте именно `curl.exe`.
 
 Не скачивайте `install.ps1` прямо в целевой каталог: скрипт должен видеть
 пустой каталог, чтобы клонировать в него репозиторий.
