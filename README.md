@@ -141,11 +141,15 @@ HTTP-сервер не имеет многопользовательской а�
 
 Готовая конфигурация находится в `.opencode/`:
 
-- `.opencode/opencode.jsonc` — MCP-сервер `pylingual`;
+- `.opencode/opencode.jsonc` — MCP-сервер `pylingual` (project-local);
 - `.opencode/agents/pylingual.md` — оркестратор;
 - `.opencode/agents/pylingual-worker.md` — worker для одного `.pyc`;
 - `.opencode/commands/pylingual-*.md` — команды `/pylingual-*`;
 - `.opencode/skills/pylingual-repair/` — правила repair-loop.
+
+MCP-подключение должно быть проектным: не добавляйте `pylingual` в глобальный
+конфиг `~/.config/opencode/opencode.json`. Точный конфиг и проверка описаны в
+[инструкции по установке](docs/installation.md#opencode-mcp-на-уровне-проекта).
 
 Worker работает только через MCP. Оркестратор запускает ровно одного worker-а
 на один `.pyc` и не принимает частичный результат: успехом считается только

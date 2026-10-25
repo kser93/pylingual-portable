@@ -256,6 +256,121 @@ saved: ...\workspace\tmp\arithmetic.py
 совпадения с оригинальным исходником: комментарии и форматирование не
 восстанавливаются.
 
+## OpenCode: MCP на уровне проекта
+
+OpenCode не обязателен для работы PyLingual. Если он используется, MCP-сервер
+подключается **только к текущему проекту**. Не добавляйте `pylingual` в
+глобальный конфиг `C:\Users\<user>\.config\opencode\opencode.json`: тогда
+сервер будет привязан к одному каталогу и станет доступен всем проектам
+машины.
+
+### Куда поместить конфигурацию
+
+Файл проекта:
+
+```text
+<корень-проекта>\.opencode\opencode.jsonc
+```
+
+Для этой установки:
+
+```text
+D:\pylingual-portable\.opencode\opencode.jsonc
+```
+
+Если файл уже существует, добавьте в него только секцию `mcp.servers.pylingual`
+и не заменяйте остальные настройки проекта.
+
+### Содержимое файла
+
+Замените `D:\\pylingual-portable` на фактический абсолютный путь к каталогу
+установки:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "timeout": {
+      "startup": 60000,
+      "catalog": 60000,
+      "execution": 1800000
+    },
+    "servers": {
+      "pylingual": {
+        "type": "local",
+        "command": [
+          "cmd.exe",
+          "/c",
+          "D:\\pylingual-portable\\pylingual.cmd",
+          "mcp",
+          "--stdio"
+        ],
+        "cwd": "D:\\pylingual-portable",
+        "codemode": false,
+        "protocol": "legacy",
+        "timeout": {
+          "startup": 60000,
+          "catalog": 60000,
+          "execution": 1800000
+        }
+      }
+    }
+  }
+}
+```
+
+Поля:
+
+- `type: "local"` — OpenCode запускает сервер как дочерний процесс;
+- `command` — `cmd.exe`, потому что `pylingual.cmd` является batch-файлом;
+- `cwd` — абсолютный каталог установки; не используйте `.`;
+- `codemode: false` — инструменты доступны как `pylingual_<tool>`;
+- `protocol: "legacy"` — режим, проверенный с текущей версией OpenCode;
+- `timeout` — запуск, каталог инструментов и выполнение.
+
+Если путь содержит пробелы, используйте его в JSON как обычную строку и
+проверьте запуск через preflight ниже.
+
+### Проверка
+
+Из корня проекта:
+
+```powershell
+Set-Location D:\pylingual-portable
+opencode mcp list
+```
+
+В списке должен быть `pylingual` со статусом `connected`. Если список пуст,
+проверьте, что OpenCode открыт именно в этом каталоге и что файл лежит в
+`.opencode\opencode.jsonc`, а не в глобальном конфиге.
+
+После подключения новая сессия должна видеть инструменты с префиксом
+`pylingual_`. Проверка через агента:
+
+```text
+Вызови pylingual_get_agent_manifest и покажи schema, spec_version и loop.
+```
+
+Ожидается `schema: "pylingual/agent-manifest/v1"` и цикл, заканчивающийся
+`status == "perfect"` → `finalize`.
+
+Если `opencode models` пуст или модель не авторизована, MCP-подключение всё
+равно может быть исправным; настройте провайдера отдельно:
+
+```powershell
+opencode models
+opencode auth login
+```
+
+### Нужны ли файлы агентов
+
+Нет. MCP-сервер сам отдаёт манифест, роли и skill через tools/resources.
+Каталоги `.opencode\agents` и `.opencode\skills` нужны только для
+OpenCode-нативных агентов и команд `/pylingual-*`. Без них обычный
+MCP-совместимый агент всё равно может получить инструкции через
+`pylingual_get_agent_manifest`, `pylingual_get_agent_spec` и
+`pylingual_get_skill`.
+
 ## Шаг 7. Работа без сети
 
 После установки runtime, toolchain-ов и моделей сеть не нужна. Лаунчер

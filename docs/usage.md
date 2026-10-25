@@ -219,6 +219,9 @@ Dry-run без создания ревизии. Используйте, когд
 - `commands/pylingual-*.md` — команды `/pylingual-*`;
 - `skills/pylingual-repair/` — правила repair-loop.
 
+MCP-конфигурация должна быть project-local. Конкретный файл, абсолютные пути и
+проверка описаны в [инструкции по установке](installation.md#opencode-mcp-на-уровне-проекта).
+
 Оркестратор запускает ровно одного worker-а на один `.pyc` и ждёт завершения.
 Worker не имеет доступа к shell, edit и web; он работает только с MCP и
 принимает изменения только после exact verifier-а.
