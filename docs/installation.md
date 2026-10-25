@@ -65,7 +65,7 @@ Set-Location D:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
 curl.exe -L --fail -o $installer `
-  'https://github.com/kser93/pylingual-portable/releases/latest/download/install.ps1'
+  'https://github.com/kser93/pylingual-portable-mcp/releases/latest/download/install.ps1'
 
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File $installer -InstallDir (Get-Location).Path
@@ -81,7 +81,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 ### Уже склонированный репозиторий
 
 ```powershell
-Set-Location D:\pylingual-portable
+Set-Location D:\pylingual-portable-mcp
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
@@ -133,8 +133,8 @@ prompts и завершает процесс. Для постоянного HTTP
 репозиторий с флагом `--recurse-submodules`:
 
 ```powershell
-git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git
-Set-Location .\pylingual-portable
+git clone --recurse-submodules https://github.com/kser93/pylingual-portable-mcp.git
+Set-Location .\pylingual-portable-mcp
 ```
 
 Проверьте, что submodules инициализированы:
@@ -354,7 +354,7 @@ OpenCode не обязателен для работы PyLingual. Если он 
 Для этой установки:
 
 ```text
-D:\pylingual-portable\.opencode\opencode.jsonc
+D:\pylingual-portable-mcp\.opencode\opencode.jsonc
 ```
 
 Если файл уже существует, добавьте в него только секцию `mcp.servers.pylingual`
@@ -362,7 +362,7 @@ D:\pylingual-portable\.opencode\opencode.jsonc
 
 ### Содержимое файла
 
-Замените `D:\\pylingual-portable` на фактический абсолютный путь к каталогу
+Замените `D:\\pylingual-portable-mcp` на фактический абсолютный путь к каталогу
 установки:
 
 ```json
@@ -380,11 +380,11 @@ D:\pylingual-portable\.opencode\opencode.jsonc
         "command": [
           "cmd.exe",
           "/c",
-          "D:\\pylingual-portable\\pylingual.cmd",
+          "D:\\pylingual-portable-mcp\\pylingual.cmd",
           "mcp",
           "--stdio"
         ],
-        "cwd": "D:\\pylingual-portable",
+        "cwd": "D:\\pylingual-portable-mcp",
         "codemode": false,
         "protocol": "legacy",
         "timeout": {
@@ -415,7 +415,7 @@ D:\pylingual-portable\.opencode\opencode.jsonc
 Из корня проекта:
 
 ```powershell
-Set-Location D:\pylingual-portable
+Set-Location D:\pylingual-portable-mcp
 opencode mcp list
 ```
 
@@ -513,7 +513,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\fetch_all_toolchai
 Удалите каталог проекта:
 
 ```powershell
-Remove-Item -Recurse -Force .\pylingual-portable
+Remove-Item -Recurse -Force .\pylingual-portable-mcp
 ```
 
 Проект не создаёт служб, задач планировщика и записей в реестре. Если вы

@@ -231,7 +231,7 @@ Worker не имеет доступа к shell, edit и web; он работае
 Если OpenCode установлен и доступен как `opencode`:
 
 ```powershell
-opencode mcp add pylingual -- cmd.exe /c "D:\RnD\pylingual-portable\pylingual.cmd" mcp --stdio
+opencode mcp add pylingual -- cmd.exe /c "D:\RnD\pylingual-portable-mcp\pylingual.cmd" mcp --stdio
 opencode mcp list
 ```
 

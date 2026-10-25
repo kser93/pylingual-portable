@@ -53,7 +53,7 @@ Set-Location D:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
 curl.exe -L --fail -o $installer `
-  'https://github.com/kser93/pylingual-portable/releases/latest/download/install.ps1'
+  'https://github.com/kser93/pylingual-portable-mcp/releases/latest/download/install.ps1'
 
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File $installer -InstallDir (Get-Location).Path
@@ -70,7 +70,7 @@ MCP-сервер и печатает готовый project-local конфиг O
 Если репозиторий уже склонирован:
 
 ```powershell
-Set-Location .\pylingual-portable
+Set-Location .\pylingual-portable-mcp
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 

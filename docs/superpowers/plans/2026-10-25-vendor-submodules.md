@@ -222,7 +222,7 @@ if not exist "%ROOT%\vendor\pylingual\pylingual\__init__.py" (
 Replace the "Встроенные upstream-компоненты" section with a "Upstream-компоненты (git submodules)" section that:
 
 - states both paths are submodules pinned to the commits in the table;
-- shows `git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git`;
+- shows `git clone --recurse-submodules https://github.com/kser93/pylingual-portable-mcp.git`;
 - shows `git submodule update --init --recursive` for an existing clone;
 - warns that GitHub ZIP archives omit submodule contents;
 - keeps the verification commands and mentions that the checker validates `.gitmodules`, HEAD, content hash, and licenses.

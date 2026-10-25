@@ -9,7 +9,7 @@ must not be edited in place.
 Clone the superproject together with its submodules:
 
 ```powershell
-git clone --recurse-submodules https://github.com/kser93/pylingual-portable.git
+git clone --recurse-submodules https://github.com/kser93/pylingual-portable-mcp.git
 ```
 
 For an existing clone that has no submodule contents:

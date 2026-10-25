@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$InstallDir = (Get-Location).Path,
-    [string]$RepoUrl = 'https://github.com/kser93/pylingual-portable.git',
+    [string]$RepoUrl = 'https://github.com/kser93/pylingual-portable-mcp.git',
     [string]$GitPath = '',
     [switch]$SkipModels,
     [switch]$SkipToolchains,
