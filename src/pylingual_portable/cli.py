@@ -6,6 +6,7 @@ import os
 import sys
 from pathlib import Path
 
+from . import __version__
 from .paths import CONFIG, HF_HUB, ROOT, TOOLCHAINS
 from .runner import decompile_file
 from .upstream import assert_contract
@@ -95,7 +96,7 @@ def _cmd_mcp(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Local portable PyLingual")
-    parser.add_argument("--version", action="version", version="pylingual-portable 0.1.0")
+    parser.add_argument("--version", action="version", version=f"pylingual-portable {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     decompile_parser = subparsers.add_parser("decompile", help="Decompile a .pyc file")

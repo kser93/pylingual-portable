@@ -53,7 +53,7 @@ Set-Location D:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
 Invoke-WebRequest `
-  -Uri 'https://raw.githubusercontent.com/kser93/pylingual-portable/main/install.ps1' `
+  -Uri 'https://github.com/kser93/pylingual-portable/releases/latest/download/install.ps1' `
   -OutFile $installer
 
 powershell -NoProfile -ExecutionPolicy Bypass `
@@ -210,6 +210,7 @@ pylingual.cmd             лаунчер CLI
 - [Установка](docs/installation.md)
 - [Использование: CLI и MCP](docs/usage.md)
 - [Ссылки на модели](docs/model-download-links.md)
+- [История изменений](CHANGELOG.md)
 - [Upstream-компоненты и обновление submodules](vendor/UPSTREAM.md)
 - [OpenCode harness](harness/README.md)
 - [R&D-план](docs/pylingual-portable-rd-plan.md) — исторический документ,

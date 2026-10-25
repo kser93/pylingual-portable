@@ -26,7 +26,7 @@ logger = logging.getLogger("pylingual.mcp")
 
 mcp = MCPServer(
     "pylingual",
-    version="0.1.0",
+    version=__version__,
     instructions=(
         "Portable PyLingual decompiler. Call get_agent_manifest or read "
         "pylingual://manifest at startup. The required repair loop is: "
@@ -276,7 +276,7 @@ def get_capabilities() -> dict[str, Any]:
         device = "cpu"
     return {
         "app": "pylingual-portable",
-        "version": "0.1.0",
+        "version": __version__,
         "platform": sys.platform,
         "python": sys.version.split()[0],
         "models": models,

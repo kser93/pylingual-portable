@@ -65,7 +65,7 @@ Set-Location D:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
 Invoke-WebRequest `
-  -Uri 'https://raw.githubusercontent.com/kser93/pylingual-portable/main/install.ps1' `
+  -Uri 'https://github.com/kser93/pylingual-portable/releases/latest/download/install.ps1' `
   -OutFile $installer
 
 powershell -NoProfile -ExecutionPolicy Bypass `
