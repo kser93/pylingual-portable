@@ -646,14 +646,31 @@ def agent_rules_skill_resource() -> str:
     return _read_spec("skills/pylingual-rules/SKILL.md")
 
 
-@mcp.resource(
-    "pylingual://skills/pylingual-patching-3.11",
-    name="pylingual-patching-3.11-skill",
-    description="CPython 3.11 bytecode patching techniques (cdg fallback, const order, exception regions).",
-    mime_type="text/markdown",
-)
-def agent_patching_311_skill_resource() -> str:
-    return _read_spec("skills/pylingual-patching-3.11/SKILL.md")
+def _register_patching_resources() -> None:
+    skills_root = _AGENT_SPECS / "skills"
+    if not skills_root.is_dir():
+        return
+
+    def make_reader(relative: str):
+        def _reader() -> str:
+            return _read_spec(relative)
+
+        return _reader
+
+    for directory in sorted(skills_root.glob(f"{_PATCH_SKILL_PREFIX}*")):
+        skill_name = directory.name
+        relative = f"skills/{skill_name}/SKILL.md"
+        if not (directory / "SKILL.md").is_file():
+            continue
+        mcp.resource(
+            f"pylingual://skills/{skill_name}",
+            name=f"{skill_name}-skill",
+            description=f"Patching techniques for {skill_name[len(_PATCH_SKILL_PREFIX):]}.",
+            mime_type="text/markdown",
+        )(make_reader(relative))
+
+
+_register_patching_resources()
 
 
 @mcp.prompt(
