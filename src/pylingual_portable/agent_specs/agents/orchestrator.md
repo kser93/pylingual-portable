@@ -36,3 +36,12 @@ for each .pyc:
 
 If the client does not support subagents, follow the worker contract yourself
 for one file at a time.
+
+## Patching knowledge
+
+- The worker reads `pylingual-rules` and `get_patching_skill(<version>)` before
+  the first patch.
+- Rules for other versions are tested as hypotheses, not filtered out.
+- A new rule is admitted only after `status: "perfect"` and a finalized file.
+  Use `record_patching_rule` with `dry_run=true`; commit it only after the leak
+  scan is clean. Provenance stays in the local journal.

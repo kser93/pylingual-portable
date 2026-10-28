@@ -5,14 +5,16 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
+import threading
 from pathlib import Path
 from typing import Any
 
 from mcp.server import MCPServer
 
-from . import __version__, sessions
-from .paths import ROOT, TOOLCHAINS
+from . import __version__, health, sessions
+from .paths import ROOT
 from .runner import decompile_file, detect_version
 from .upstream import assert_contract
 
@@ -59,6 +61,7 @@ def _public_session(session_id: str) -> dict:
         "input": meta.get("input", {}),
         "current_revision": meta.get("current_revision", 0),
         "revisions": meta.get("revisions", []),
+        "finalized": meta.get("finalized"),
     }
 
 
@@ -76,8 +79,9 @@ def _manifest_payload() -> dict[str, Any]:
         "manifest": "pylingual://manifest",
         "orchestrator": "pylingual://agents/orchestrator",
         "worker": "pylingual://agents/worker",
-        "pylingual-repair": "pylingual://skills/pylingual-repair",
     }
+    for name, spec in manifest.get("skills", {}).items():
+        manifest["resources"][name] = spec["uri"]
     manifest["prompts"] = [
         "pylingual_worker_task",
         "pylingual_orchestrator_task",
@@ -88,7 +92,7 @@ def _manifest_payload() -> dict[str, Any]:
 
 def _spec_payload(name: str, spec: dict[str, Any]) -> dict[str, Any]:
     content = _read_spec(spec["file"])
-    return {
+    payload = {
         "name": name,
         "uri": spec["uri"],
         "description": spec.get("description", ""),
@@ -96,6 +100,87 @@ def _spec_payload(name: str, spec: dict[str, Any]) -> dict[str, Any]:
         "sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
         "content": content,
     }
+    for field in ("version", "applies_to"):
+        if field in spec:
+            payload[field] = spec[field]
+    return payload
+
+
+_PATCH_SKILL_PREFIX = "pylingual-patching-"
+_VERSION_RE = re.compile(r"(\d+)\.(\d+)")
+_RULE_HEADING_RE = re.compile(
+    r"^###\s+(R-(\d+)\.(\d+)-(\d+))\s*[·:|\-]\s*([a-z0-9][a-z0-9/_-]*)\s*$",
+    re.MULTILINE,
+)
+_RULE_KEY_RE = re.compile(r"^[a-z0-9][a-z0-9/_-]*$")
+_RULE_WRITE_LOCK = threading.Lock()
+_LEAK_PATTERNS = (
+    (re.compile(r"[A-Za-z]:\\"), "absolute path"),
+    (re.compile(r"(^|[^\w])/"), "path separator"),
+    (re.compile(r"\.pyc\b", re.IGNORECASE), "pyc file name"),
+    (re.compile(r"\.py\b", re.IGNORECASE), "py file name"),
+    (re.compile(r"\bses_[0-9a-f]+\b", re.IGNORECASE), "session id"),
+    (re.compile(r"\b[0-9a-f]{16,}\b", re.IGNORECASE), "hash-like token"),
+    (re.compile(r"https?://", re.IGNORECASE), "url"),
+)
+_QUOTED_RE = re.compile(r"'([^'\n]{6,})'|\"([^\"\n]{6,})\"")
+
+
+def _normalize_version(version: str) -> str:
+    match = _VERSION_RE.search(version or "")
+    if not match:
+        raise ValueError(f"cannot derive major.minor from version: {version!r}")
+    return f"{match.group(1)}.{match.group(2)}"
+
+
+def _patch_skill_entries() -> dict[str, dict[str, Any]]:
+    skills = _manifest_payload().get("skills", {})
+    return {
+        name[len(_PATCH_SKILL_PREFIX):]: spec
+        for name, spec in skills.items()
+        if name.startswith(_PATCH_SKILL_PREFIX)
+    }
+
+
+def _parse_rule_blocks(text: str) -> list[dict[str, Any]]:
+    matches = list(_RULE_HEADING_RE.finditer(text))
+    rules: list[dict[str, Any]] = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        rules.append(
+            {
+                "id": match.group(1),
+                "version": f"{match.group(2)}.{match.group(3)}",
+                "key": match.group(5),
+                "body": text[match.end():end].strip(),
+            }
+        )
+    return rules
+
+
+def _version_distance(target: str, other: str) -> tuple:
+    target_major, target_minor = (int(part) for part in target.split("."))
+    other_major, other_minor = (int(part) for part in other.split("."))
+    return (other_major != target_major, abs(other_minor - target_minor), other_major, other_minor)
+
+
+def _leak_findings(text: str, source: str, session_id: str) -> list[str]:
+    findings = [label for pattern, label in _LEAK_PATTERNS if pattern.search(text)]
+    for match in _QUOTED_RE.finditer(text):
+        literal = match.group(1) or match.group(2)
+        if literal and literal in source:
+            findings.append(f"quoted text from the target source: {literal[:24]!r}")
+            break
+    try:
+        objects = sessions.list_code_objects(session_id)
+    except Exception:
+        objects = []
+    for obj in objects:
+        name = (obj.get("name") or "").split(".")[-1].strip()
+        if len(name) >= 8 and name in text:
+            findings.append(f"target code-object name: {name!r}")
+            break
+    return findings
 
 
 @mcp.tool()
@@ -242,13 +327,7 @@ def finalize(session_id: str, target_path: str | None = None) -> dict[str, Any]:
 @mcp.tool()
 def get_capabilities() -> dict[str, Any]:
     """Return installed Python versions, toolchains, devices and limits."""
-    installed_path = ROOT / "models" / "installed.json"
-    models = []
-    if installed_path.exists():
-        try:
-            models = sorted(json.loads(installed_path.read_text(encoding="utf-8")).get("installed", {}))
-        except json.JSONDecodeError:
-            models = []
+    installation = health.installation_report()
     components: dict[str, dict[str, Any]] = {}
     components_path = ROOT / "vendor" / "components.json"
     if components_path.exists():
@@ -265,13 +344,16 @@ def get_capabilities() -> dict[str, Any]:
             }
         except json.JSONDecodeError:
             components = {}
-    toolchains = sorted(path.parent.name for path in TOOLCHAINS.glob("cpython-*-win-x64/python.exe"))
+    torch_ok = True
+    torch_error = None
     try:
         import torch
 
         cuda = torch.cuda.is_available()
         device = torch.cuda.get_device_name(0) if cuda else "cpu"
-    except Exception:
+    except Exception as exc:
+        torch_ok = False
+        torch_error = repr(exc)
         cuda = False
         device = "cpu"
     return {
@@ -279,11 +361,19 @@ def get_capabilities() -> dict[str, Any]:
         "version": __version__,
         "platform": sys.platform,
         "python": sys.version.split()[0],
-        "models": models,
-        "toolchains": toolchains,
+        "models": installation["models"]["models"],
+        "missing_models": installation["models"]["missing"],
+        "model_errors": installation["models"]["errors"],
+        "toolchains": installation["toolchains"]["toolchains"],
+        "missing_toolchains": installation["toolchains"]["missing"],
+        "installation_ok": installation["ok"],
+        "models_ok": installation["models"]["ok"],
+        "toolchains_ok": installation["toolchains"]["ok"],
         "components": components,
         "cuda_available": cuda,
         "device": device,
+        "torch_ok": torch_ok,
+        "torch_error": torch_error,
         "limits": {
             "max_source_bytes": sessions.MAX_SOURCE_BYTES,
             "max_pyc_bytes": sessions.MAX_PYC_BYTES,
@@ -292,7 +382,7 @@ def get_capabilities() -> dict[str, Any]:
 
 
 @mcp.tool()
-def doctor() -> dict[str, Any]:
+def doctor(require_models: bool = True, require_toolchains: bool = True) -> dict[str, Any]:
     """Check the local runtime and return a compact health summary."""
     capabilities = get_capabilities()
     try:
@@ -301,8 +391,10 @@ def doctor() -> dict[str, Any]:
     except Exception as exc:
         contract = {"ok": False, "error": repr(exc)}
         contract_ok = False
+    models_ok = bool(capabilities["models_ok"]) or not require_models
+    toolchains_ok = bool(capabilities["toolchains_ok"]) or not require_toolchains
     return {
-        "ok": bool(capabilities["models"]) and bool(capabilities["toolchains"]) and contract_ok,
+        "ok": models_ok and toolchains_ok and bool(capabilities["torch_ok"]) and contract_ok,
         **capabilities,
         "upstream_contract": contract,
         "models_dir": str(ROOT / "models"),
@@ -350,6 +442,160 @@ def get_skill(name: str = "pylingual-repair") -> dict[str, Any]:
     return _spec_payload(key, skills[key])
 
 
+@mcp.tool()
+def get_patching_skill(version: str, include_all_versions: bool = True) -> dict[str, Any]:
+    """Return patching techniques for the target version plus every other known version.
+
+    The target version's rules come first. Rules from other versions are valid
+    hypotheses, not guarantees: the exact verifier decides whether they apply.
+    """
+    target = _normalize_version(version)
+    entries = _patch_skill_entries()
+    if target not in entries:
+        raise ValueError(
+            f"no patching skill for {target}; known versions: {', '.join(sorted(entries))}"
+        )
+
+    primary_content = _read_spec(entries[target]["file"])
+    primary_rules = _parse_rule_blocks(primary_content)
+    result: dict[str, Any] = {
+        "target": target,
+        "primary": {
+            "version": target,
+            "sha256": hashlib.sha256(primary_content.encode("utf-8")).hexdigest(),
+            "rules": primary_rules,
+        },
+        "others": [],
+        "also_seen_in": {},
+        "policy": (
+            "Try the target version first, then the other versions. A rule from "
+            "another version is a hypothesis: verify it with verify_source or "
+            "apply_patch. Only status == 'perfect' decides."
+        ),
+    }
+    if not include_all_versions:
+        return result
+
+    primary_keys = {rule["key"] for rule in primary_rules}
+    others = sorted((v for v in entries if v != target), key=lambda v: _version_distance(target, v))
+    for other in others:
+        content = _read_spec(entries[other]["file"])
+        rules = []
+        for rule in _parse_rule_blocks(content):
+            if rule["key"] in primary_keys:
+                result["also_seen_in"].setdefault(rule["key"], []).append(other)
+                continue
+            rules.append(rule)
+        if rules:
+            result["others"].append(
+                {
+                    "version": other,
+                    "sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+                    "rules": rules,
+                }
+            )
+    return result
+
+
+@mcp.tool()
+def record_patching_rule(
+    session_id: str,
+    key: str,
+    symptom: str,
+    change: str,
+    effect: str,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Validate (and optionally append) a patching rule after a perfect, finalized session.
+
+    A rule is accepted only when the session is `perfect` and finalized. The
+    destination list is chosen from the target binary's major.minor version.
+    Provenance (file name, session id, hashes, target identifiers and quoted
+    source text) is rejected, not stored.
+    """
+    meta = sessions.get_session(session_id)
+    if meta.get("status") != "perfect":
+        return {"allowed": False, "reason": f"session status is {meta.get('status')!r}, not 'perfect'"}
+    if not meta.get("finalized"):
+        return {"allowed": False, "reason": "session has no finalized output"}
+
+    version = _normalize_version(meta.get("input", {}).get("version", ""))
+    entries = _patch_skill_entries()
+    skill_name = f"{_PATCH_SKILL_PREFIX}{version}"
+    if version not in entries:
+        return {"allowed": False, "reason": f"no patching skill for {version}"}
+
+    key = key.strip()
+    if not _RULE_KEY_RE.match(key):
+        return {"allowed": False, "reason": f"invalid rule key: {key!r}"}
+
+    spec = entries[version]
+    content = _read_spec(spec["file"])
+    rules = _parse_rule_blocks(content)
+    numbers = [int(rule["id"].rsplit("-", 1)[1]) for rule in rules]
+    rule_id = f"R-{version}-{(max(numbers) + 1) if numbers else 1:03d}"
+
+    block = (
+        f"### {rule_id} · {key}\n"
+        f"**symptom:** {symptom.strip()}\n"
+        f"**change:** {change.strip()}\n"
+        f"**effect:** {effect.strip()}\n"
+        "**verify:** exact verifier: status == \"perfect\"; positional `co_consts` and instruction equality.\n"
+    )
+
+    try:
+        source = sessions.get_source(session_id).get("source", "")
+    except Exception:
+        source = ""
+    findings = _leak_findings(" ".join((key, symptom, change, effect)), source, session_id)
+    allowed = not findings
+    result: dict[str, Any] = {
+        "allowed": allowed,
+        "dry_run": dry_run,
+        "destination": spec["file"],
+        "rule_id": rule_id,
+        "block": block,
+        "findings": findings,
+    }
+    if not allowed or dry_run:
+        return result
+
+    with _RULE_WRITE_LOCK:
+        content = _read_spec(spec["file"])
+        rules = _parse_rule_blocks(content)
+        numbers = [int(rule["id"].rsplit("-", 1)[1]) for rule in rules]
+        rule_id = f"R-{version}-{(max(numbers) + 1) if numbers else 1:03d}"
+        if rule_id != result["rule_id"]:
+            block = (
+                f"### {rule_id} · {key}\n"
+                f"**symptom:** {symptom.strip()}\n"
+                f"**change:** {change.strip()}\n"
+                f"**effect:** {effect.strip()}\n"
+                "**verify:** exact verifier: status == \"perfect\"; positional `co_consts` and instruction equality.\n"
+            )
+            result["rule_id"] = rule_id
+            result["block"] = block
+        match = re.search(r"(?m)^ruleset_version:\s*(\d+)\s*$", content)
+        next_version = (int(match.group(1)) + 1) if match else 2
+        if match:
+            content = content[: match.start()] + f"ruleset_version: {next_version}" + content[match.end():]
+        updated = content.rstrip("\n") + "\n\n" + result["block"]
+        path = (_AGENT_SPECS / spec["file"]).resolve()
+        if _AGENT_SPECS not in path.parents:
+            return {"allowed": False, "reason": "resolved skill path escapes agent_specs"}
+        sessions.atomic_write_text(path, updated)
+
+        raw_manifest = json.loads(_AGENT_MANIFEST.read_text(encoding="utf-8"))
+        if skill_name in raw_manifest.get("skills", {}):
+            raw_manifest["skills"][skill_name]["version"] = str(next_version)
+            sessions.atomic_write_json(_AGENT_MANIFEST, raw_manifest)
+
+    result["dry_run"] = False
+    result["ruleset_version"] = next_version
+    result["sha256"] = hashlib.sha256(updated.encode("utf-8")).hexdigest()
+    return result
+
+
 @mcp.resource(
     "pylingual://manifest",
     name="agent-manifest",
@@ -388,6 +634,26 @@ def agent_worker_resource() -> str:
 )
 def agent_repair_skill_resource() -> str:
     return _read_spec("skills/pylingual-repair/SKILL.md")
+
+
+@mcp.resource(
+    "pylingual://skills/pylingual-rules",
+    name="pylingual-rules-skill",
+    description="Operational rules v1: one worker, ground truth, exact comparator, no dead code.",
+    mime_type="text/markdown",
+)
+def agent_rules_skill_resource() -> str:
+    return _read_spec("skills/pylingual-rules/SKILL.md")
+
+
+@mcp.resource(
+    "pylingual://skills/pylingual-patching-3.11",
+    name="pylingual-patching-3.11-skill",
+    description="CPython 3.11 bytecode patching techniques (cdg fallback, const order, exception regions).",
+    mime_type="text/markdown",
+)
+def agent_patching_311_skill_resource() -> str:
+    return _read_spec("skills/pylingual-patching-3.11/SKILL.md")
 
 
 @mcp.prompt(

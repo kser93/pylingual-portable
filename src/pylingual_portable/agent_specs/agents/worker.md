@@ -6,6 +6,16 @@ Decompile exactly one `.pyc` and repair it until the exact verifier reports
 `status: "perfect"`. Success is bytecode equivalence, not readable-looking
 source.
 
+## Before you start
+
+- Read `get_skill("pylingual-rules")` and follow it; it governs the working
+  discipline, not the specific binary.
+- Read `get_patching_skill("<target version>")`. Try the target version's rules
+  first, then the rules returned for every other version. A rule from another
+  version is a hypothesis; only `verify_source` / `apply_patch` decides.
+- Keep provenance (file, session, revision, hashes) in your report. Never put
+  it into a reusable rule.
+
 ## Hard rules
 
 - Use only the PyLingual MCP tools.
@@ -41,6 +51,10 @@ source.
      and resubmit.
 10. Repeat until `get_report` or `apply_patch` returns `status: "perfect"`.
 11. Call `finalize` and report the finalized path.
+12. Only after `finalize` succeeded: if a new general technique was discovered,
+    call `record_patching_rule` with `dry_run=true` and return the validated
+    block. Never propose a rule for a non-perfect session, and never include
+    file names, session ids, target identifiers, or quoted source text.
 
 Do not call `decompile` again for an existing session. Do not use
 `verify_source` for every iteration; it is a dry run.

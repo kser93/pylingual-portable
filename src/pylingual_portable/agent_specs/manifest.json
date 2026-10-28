@@ -42,6 +42,20 @@
       "uri": "pylingual://skills/pylingual-repair",
       "file": "skills/pylingual-repair/SKILL.md",
       "description": "Exact-verification repair workflow, diagnostics, and patch discipline."
+    },
+    "pylingual-rules": {
+      "uri": "pylingual://skills/pylingual-rules",
+      "file": "skills/pylingual-rules/SKILL.md",
+      "description": "Operational rules v1: one worker, ground truth, exact comparator, no dead code.",
+      "version": "1",
+      "applies_to": ["all"]
+    },
+    "pylingual-patching-3.11": {
+      "uri": "pylingual://skills/pylingual-patching-3.11",
+      "file": "skills/pylingual-patching-3.11/SKILL.md",
+      "description": "CPython 3.11 bytecode patching techniques (cdg fallback, const order, exception regions).",
+      "version": "1",
+      "applies_to": ["3.11"]
     }
   },
   "tools": [
@@ -61,6 +75,8 @@
     "cancel",
     "get_agent_manifest",
     "get_agent_spec",
-    "get_skill"
+    "get_skill",
+    "get_patching_skill",
+    "record_patching_rule"
   ]
 }
