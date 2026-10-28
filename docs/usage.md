@@ -23,8 +23,10 @@
 .\pylingual.cmd doctor
 ```
 
-Команда возвращает код `0`, если основные компоненты доступны. Отсутствие GPU
-не является ошибкой: в выводе будет `CUDA available: False`.
+Команда возвращает код `0`, если доступны runtime, torch, upstream contract,
+все ожидаемые toolchain-ы и model packs. Отсутствие GPU не является ошибкой:
+в выводе будет `CUDA available: False`. Для частичной установки используйте
+`--skip-models` и/или `--skip-toolchains`.
 
 ### `decompile`
 
@@ -96,7 +98,7 @@ HTTP-сервер не имеет авторизации и предназнач
 
 ## MCP
 
-MCP-сервер предоставляет 17 инструментов. Имена в OpenCode имеют префикс
+MCP-сервер предоставляет 19 инструментов. Имена в OpenCode имеют префикс
 `pylingual_`; в JSON-RPC и MCP-клиентах используются имена без префикса.
 
 | Инструмент | Назначение |
@@ -111,13 +113,19 @@ MCP-сервер предоставляет 17 инструментов. Име�
 | `apply_patch` | применить полный исходник и проверить его |
 | `revert` | вернуться к предыдущей ревизии |
 | `export` | сохранить ревизию в `workspace\exports` |
-| `finalize` | записать `.py` рядом с исходным `.pyc` при `perfect` |
+| `finalize` | повторно проверить и записать `.py` при `perfect` |
 | `get_capabilities` | версии, toolchain-ы, устройства и лимиты |
 | `doctor` | краткая диагностика runtime |
 | `cancel` | зарезервирован; текущая реализация синхронная |
 | `get_agent_manifest` | роли агентов, skills, цикл и правила |
 | `get_agent_spec` | контракт `orchestrator` или `worker` |
-| `get_skill` | спецификация skill-а `pylingual-repair` |
+| `get_skill` | спецификация skill-а по имени |
+| `get_patching_skill` | правила патчинга для целевой версии |
+| `record_patching_rule` | добавить проверенное правило после perfect-сессии |
+
+`get_patching_skill` возвращает dedicated-правила целевой версии, если они есть;
+иначе `primary.rules` пуст, а `others` содержит правила других версий как
+гипотезы.
 
 ### Спецификации агентов и skill-ов
 
@@ -128,6 +136,8 @@ MCP-сервер предоставляет 17 инструментов. Име�
   - `pylingual://agents/orchestrator`
   - `pylingual://agents/worker`
   - `pylingual://skills/pylingual-repair`
+  - `pylingual://skills/pylingual-rules`
+  - `pylingual://skills/pylingual-patching-3.11`
 - **prompts** для клиентов, которые умеют получать prompt-шаблоны:
   - `pylingual_worker_task(path, version)`
   - `pylingual_orchestrator_task(paths)`
@@ -135,7 +145,8 @@ MCP-сервер предоставляет 17 инструментов. Име�
 - **tools** как универсальный fallback:
   - `get_agent_manifest()`
   - `get_agent_spec(role="worker"|"orchestrator")`
-  - `get_skill(name="pylingual-repair")`
+  - `get_skill(name=...)`
+  - `get_patching_skill(version=...)`
 
 Инструменты возвращают `content` (Markdown), `sha256` и `spec_version`.
 Манифест содержит цикл `decompile -> get_report -> apply_patch -> repeat until
@@ -147,7 +158,7 @@ status == "perfect" -> finalize` и жёсткие правила: только 
 
 ```json
 {
-  "path": "D:\\work\\sample.pyc",
+  "path": "C:\\work\\sample.pyc",
   "version": "3.12",
   "top_k": 10,
   "timeout": 900,
@@ -199,9 +210,11 @@ toolchain-ом и сравнивает байткод с исходным `.pyc`
 {"session_id": "ses_..."}
 ```
 
-Инструмент записывает `.py` рядом с исходным `.pyc`. Если файл с таким именем
-уже существует, используется `_decompiled_1.py`, `_decompiled_2.py` и так
-далее. Не-perfect сессия не финализируется.
+Инструмент повторно запускает strict-verifier для текущего исходника, сверяет
+`source_sha256` с report и только затем записывает `.py` рядом с исходным
+`.pyc`. Если файл с таким именем уже существует, используется
+`_decompiled_1.py`, `_decompiled_2.py` и так далее. Не-perfect сессия и сессия
+с устаревшим report не финализируются.
 
 ### `verify_source`
 
@@ -228,16 +241,9 @@ Worker не имеет доступа к shell, edit и web; он работае
 
 ### Подключение MCP
 
-Если OpenCode установлен и доступен как `opencode`:
-
-```powershell
-opencode mcp add pylingual -- cmd.exe /c "D:\RnD\pylingual-portable-mcp\pylingual.cmd" mcp --stdio
-opencode mcp list
-```
-
-Укажите свой абсолютный путь к `pylingual.cmd`. Для проектной конфигурации
-используйте `.opencode\opencode.jsonc`; пример для другой установки находится
-в [`docs/opencode-mcp.jsonc`](opencode-mcp.jsonc).
+OpenCode загружает `.opencode\opencode.jsonc` при открытии проекта. CLI не
+требуется. Пример конфигурации для другой установки находится в
+[`docs/opencode-mcp.jsonc`](opencode-mcp.jsonc).
 
 ### Команды
 
@@ -255,17 +261,17 @@ opencode mcp list
 техническую ошибку, оркестратор запускает нового worker-а на том же файле, а
 не пропускает его.
 
-### Проверка конфигурации без модели
+> **Известное ограничение 0.3.0:** command layer для `status`, `finalize` и
+> `repair` ещё уточняется; для существующих сессий он может проходить через
+> worker, контракт которого начинается с `decompile`. Авторитетный интерфейс —
+> MCP tools `get_report`, `finalize`, `apply_patch`.
+
+### Проверка MCP
+
+CLI `opencode` не нужен. Проверьте сервер напрямую:
 
 ```powershell
-.\scripts\python.cmd .\scripts\check_opencode_harness.py
-.\scripts\python.cmd .\scripts\test_opencode_config_mcp.py
-.\scripts\python.cmd .\scripts\opencode_harness.py --dry-run
-```
-
-Проверка MCP без OpenCode:
-
-```powershell
+.\scripts\python.cmd .\scripts\probe_mcp.py
 .\scripts\python.cmd .\scripts\test_mcp_stdio.py
 .\scripts\python.cmd .\scripts\test_mcp_inmemory.py
 ```
@@ -275,7 +281,8 @@ opencode mcp list
 Exact verifier выполняет следующие шаги:
 
 1. компилирует сгенерированный исходник целевым интерпретатором;
-2. сравнивает байткод и управляющий граф с исходным `.pyc`;
+2. сравнивает байткод, управляющий граф, code-object metadata и типы констант
+   с исходным `.pyc`;
 3. присваивает каждому code object-у статус `perfect` или диагностику.
 
 Успехом считается только `status: "perfect"`. Читаемый, но семантически
@@ -299,5 +306,5 @@ Exact verifier выполняет следующие шаги:
 
 - [Установка](installation.md)
 - [Ссылки на модели](model-download-links.md)
-- [OpenCode harness](../harness/README.md)
+- [Фикстуры для smoke-проверок](../harness/README.md)
 - [R&D-план](pylingual-portable-rd-plan.md)

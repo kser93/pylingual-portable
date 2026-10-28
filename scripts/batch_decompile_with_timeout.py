@@ -32,7 +32,7 @@ def main() -> int:
     output = Path(args.output).resolve() if args.output else pyc.with_suffix(".py")
     command = [
         sys.executable,
-        str(ROOT / "scripts" / "crm_decompile_one.py"),
+        str(ROOT / "scripts" / "batch_decompile_one.py"),
         str(pyc),
         "--version",
         args.version,

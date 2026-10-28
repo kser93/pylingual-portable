@@ -60,7 +60,7 @@ duplicated source snapshots.
 - `scripts/python.cmd -m unittest tests.test_vendor_manifest`
 - `scripts/python.cmd scripts/check_vendor.py`
 - `scripts/python.cmd -m unittest tests.test_upstream_contract`
-- `scripts/python.cmd scripts/check_opencode_harness.py`
+- `scripts/python.cmd scripts/probe_mcp.py`
 - A fresh clone with `--recurse-submodules` launches and passes the checker.
 
 ## Risks

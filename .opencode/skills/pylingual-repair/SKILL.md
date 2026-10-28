@@ -185,5 +185,3 @@ target `.py` must not be presented as a successful recovery.
   revision semantics.
 - `references/repair-patterns.md` — more detailed bytecode-to-source patterns.
 - `references/version-syntax.md` — syntax constraints for Python 3.6–3.15.
-- `references/evaluation.md` — how to run the OpenCode harness and interpret
-  its results.

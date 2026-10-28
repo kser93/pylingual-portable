@@ -16,7 +16,7 @@ git submodule и не изменяется; переносимая обвязк�
 - Локальный Python 3.15.1; системный Python не требуется.
 - Отдельные toolchain-ы для каждой целевой версии Python.
 - CPU и NVIDIA GPU; при отсутствии GPU используется CPU.
-- CLI, MCP-сервер (stdio и Streamable HTTP) и интеграция с OpenCode.
+- CLI, MCP-сервер (stdio и Streamable HTTP) и нативные агенты OpenCode.
 - Работа без сети после установки runtime, toolchain-ов и моделей.
 - Перенос каталога без изменения абсолютных путей.
 
@@ -48,8 +48,8 @@ Runtime, toolchain-ы и модели занимают около 17 ГБ; ос�
 Краткая установка в пустой каталог:
 
 ```powershell
-New-Item -ItemType Directory -Force D:\pylingual | Out-Null
-Set-Location D:\pylingual
+New-Item -ItemType Directory -Force C:\pylingual | Out-Null
+Set-Location C:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
 curl.exe -L --fail -o $installer `
@@ -123,18 +123,21 @@ PyLingual.
 # endpoint: http://127.0.0.1:7331/mcp
 ```
 
-MCP-инструменты: `decompile`, `get_session`, `get_report`, `get_source`,
+MCP-инструменты (19): `decompile`, `get_session`, `get_report`, `get_source`,
 `list_code_objects`, `get_code_object`, `verify_source`, `apply_patch`,
 `revert`, `export`, `finalize`, `get_capabilities`, `doctor`, `cancel`,
-`get_agent_manifest`, `get_agent_spec`, `get_skill`.
-Инструмент `finalize` записывает `.py` только при `status: "perfect"` и не
-перезаписывает существующие файлы.
+`get_agent_manifest`, `get_agent_spec`, `get_skill`, `get_patching_skill`,
+`record_patching_rule`.
+Инструмент `finalize` записывает `.py` только при `status: "perfect"`, повторно
+проверяет исходник strict-verifier-ом и не перезаписывает существующие файлы.
 
 Сервер также отдаёт спецификацию агентов и skill-ов. Клиенты, поддерживающие
 MCP resources, читают `pylingual://manifest`, `pylingual://agents/orchestrator`,
-`pylingual://agents/worker` и `pylingual://skills/pylingual-repair`.
+`pylingual://agents/worker`, `pylingual://skills/pylingual-repair`,
+`pylingual://skills/pylingual-rules` и
+`pylingual://skills/pylingual-patching-3.11`.
 Универсальный fallback для остальных клиентов — инструменты
-`get_agent_manifest`, `get_agent_spec` и `get_skill`.
+`get_agent_manifest`, `get_agent_spec`, `get_skill` и `get_patching_skill`.
 
 Подробное описание CLI и MCP: [`docs/usage.md`](docs/usage.md).
 
@@ -159,12 +162,12 @@ Worker работает только через MCP. Оркестратор за
 на один `.pyc` и не принимает частичный результат: успехом считается только
 `status: "perfect"` от exact verifier-а.
 
-Подключение MCP к OpenCode описано в
-[`docs/usage.md`](docs/usage.md#opencode). Для проверки конфигурации без модели:
+OpenCode загружает project-local конфигурацию при открытии проекта; **CLI
+`opencode` не требуется и не вызывается**. Для проверки самого MCP-сервера
+используйте:
 
 ```powershell
-.\scripts\python.cmd .\scripts\check_opencode_harness.py
-.\scripts\python.cmd .\scripts\opencode_harness.py --dry-run
+.\scripts\python.cmd .\scripts\probe_mcp.py
 ```
 
 ## Структура репозитория
@@ -173,7 +176,7 @@ Worker работает только через MCP. Оркестратор за
 src/pylingual_portable/   обвязка: CLI, MCP, сессии, toolchain, модели
 vendor/                   git submodules PyLingual и xdis
 scripts/                  установка, загрузка моделей, проверки
-harness/                  фикстуры и evaluation harness
+harness/                  .pyc-фикстуры для smoke-проверок
 docs/                     документация
 toolchains/               целевые CPython (создаётся при установке)
 models/                   локальный HF-кэш и манифесты (создаётся при установке)
@@ -182,17 +185,16 @@ workspace/                временные файлы и сессии (лок�
 pylingual.cmd             лаунчер CLI
 ```
 
-Каталоги `runtime/`, `toolchains/`, `models/` и `workspace/` исключены из Git.
-Содержимое `vendor/` приходит из submodules и не редактируется вручную.
+Каталоги `runtime/`, `toolchains/` и `workspace/` исключены из Git. В `models/`
+отслеживаются только манифесты `model-links.json` и `update-check.json`;
+HF-кэш и локальный `installed.json` не коммитятся. Содержимое `vendor/`
+приходит из submodules и не редактируется вручную.
 
 ## Проверка целостности
 
 ```powershell
 .\scripts\python.cmd .\scripts\check_vendor.py
-.\scripts\python.cmd -m unittest tests.test_vendor_manifest
-.\scripts\python.cmd -m unittest tests.test_timestamp_patch
-.\scripts\python.cmd -m unittest tests.test_mcp_agent_specs
-.\scripts\python.cmd -m unittest tests.test_upstream_contract
+.\scripts\python.cmd -m unittest discover -s tests -v
 ```
 
 `check_vendor.py` проверяет `.gitmodules`, HEAD submodule-ов, gitlink (если
@@ -215,7 +217,7 @@ pylingual.cmd             лаунчер CLI
 - [Ссылки на модели](docs/model-download-links.md)
 - [История изменений](CHANGELOG.md)
 - [Upstream-компоненты и обновление submodules](vendor/UPSTREAM.md)
-- [OpenCode harness](harness/README.md)
+- [Фикстуры для smoke-проверок](harness/README.md)
 - [R&D-план](docs/pylingual-portable-rd-plan.md) — исторический документ,
   не инструкция по установке.
 

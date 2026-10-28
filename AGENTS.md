@@ -32,49 +32,17 @@ This project is a local, offline-first PyLingual decompiler with an MCP server.
 - `/pylingual-status`, `/pylingual-finalize`, `/pylingual-export`,
   `/pylingual-doctor`.
 
-## For evaluation
+## OpenCode integration
 
-Use the OpenCode harness; do not score an agent from its prose:
-
-```powershell
-.\scripts\python.cmd .\scripts\opencode_harness.py --dry-run
-.\scripts\python.cmd .\scripts\check_opencode_harness.py
-```
-
-Real runs require the `opencode` CLI. The fake launcher is only a plumbing
-test.
-
-### Evaluation must be one sample per process
-
-- **Exactly one `.pyc` per `opencode run` and per harness invocation.** Never
-  pass a directory, glob, list, or multi-task manifest to one run. To test
-  several files, invoke the one-sample command separately for each file,
-  sequentially.
-- **The harness must reject batches.** `opencode_harness.py` must exit non-zero
-  when more than one task is selected or when `--repeat != 1`. No parent loop,
-  no hidden batch mode, and no `--allow-batch` escape hatch for evaluation.
-- **One worker at a time.** The orchestrator starts exactly one
-  `pylingual-worker` per file; the harness verifies from the event stream that
-  worker calls do not overlap. Sequential retries on technical failure are
-  allowed.
-- **Independent success only.** A task passes only when the final report is
-  `status: "perfect"`, the finalized sibling file exists and its SHA-256 equals
-  the final source SHA-256, and the worker contract holds. Agent prose is not
-  evidence.
-- **Partial runs are not results.** Timeouts, interrupted runs, and incomplete
-  matrices are labeled incomplete and never counted as passes. Do not say
-  "cleared" or "works" from one sample; state the exact scope.
-- **Do not mix contours.** `run_corpus.py` tests the base model, not the agent.
-  Corpus/base work happens only when explicitly requested and never in the same
-  invocation as agent evaluation. Base-model scores are not agent scores.
-- **No unrequested infrastructure.** Do not add new runners, batch manifests,
-  benchmark orchestrators, or evaluation layers unless the user explicitly asks.
-  Do not switch from agent testing to corpus testing on your own.
-- **Stop and ask on conflict.** Before running, state the exact command and how
-  many `.pyc` files it processes. If it processes more than one, or if the rules
-  are ambiguous, stop and ask. Do not choose the permissive interpretation.
-- **Report facts, not spin.** Include the command, sample count, status, and
-  whether the run completed. Separate measured facts from hypotheses.
+- This project does not invoke the `opencode` CLI and does not ship an external
+  CLI harness, fake launcher, or batch evaluation layer.
+- Agents run in the native OpenCode session through `.opencode/` and the
+  `pylingual_*` MCP tools.
+- Do not add CLI runners or new evaluation infrastructure unless the user
+  explicitly asks.
+- A decompilation is successful only when `pylingual_get_report` returns
+  `status: "perfect"` and the finalized sibling file exists with the same
+  SHA-256 as the reported source. Agent prose is not evidence.
 
 ## Runtime
 

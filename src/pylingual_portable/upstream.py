@@ -1,11 +1,12 @@
 """Single integration point for the embedded PyLingual upstream components.
 
 All imports of :mod:`pylingual` used by the portable wrapper go through this
-module.  The upstream source itself is never edited; only three functions are
-replaced at runtime (``load_models``, ``compile_version`` and the
-control-flow header writer) so that the decompiler can run fully offline with
-local model snapshots, local Python toolchains, and hash-based ``.pyc`` files
-that have no source timestamp.
+module.  The upstream source itself is never edited; four functions are
+replaced at runtime (``load_models``, ``compile_version``, the
+control-flow header writer, and ``compare_pyc``) so that the decompiler can run
+fully offline with local model snapshots, local Python toolchains, strict
+metadata verification, and hash-based ``.pyc`` files that have no source
+timestamp.
 
 Exports are resolved lazily (PEP 562), so importing :mod:`pylingual_portable`
 does not pull in torch/transformers unless a caller actually asks for a heavy
@@ -175,13 +176,18 @@ def install_local_components() -> None:
     ``vendor/pylingual`` stays byte-identical to the pinned release.
     """
     import pylingual.decompiler as decompiler_module
+    import pylingual.equivalence_check as equivalence_module
 
     from .models import load_models
+    from .strict_verification import compare_pyc_strict
     from .toolchain import compile_with_toolchain
 
     assert_contract()
     decompiler_module.load_models = load_models
     decompiler_module.compile_version = compile_with_toolchain
+    if not getattr(equivalence_module.compare_pyc, "_pylingual_portable_strict", False):
+        equivalence_module.compare_pyc = compare_pyc_strict
+    decompiler_module.compare_pyc = compare_pyc_strict
     if not getattr(
         decompiler_module.Decompiler.run_cflow_reconstruction,
         "_pylingual_portable_patch",

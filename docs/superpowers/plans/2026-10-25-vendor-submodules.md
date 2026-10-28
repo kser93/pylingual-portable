@@ -278,7 +278,7 @@ $git = 'C:\Program Files\Git\cmd\git.exe'
 .\scripts\python.cmd .\scripts\check_vendor.py
 .\scripts\python.cmd -m unittest tests.test_vendor_manifest -v
 .\scripts\python.cmd -m unittest tests.test_upstream_contract -v
-.\scripts\python.cmd .\scripts\check_opencode_harness.py
+.\scripts\python.cmd .\scripts\probe_mcp.py
 ```
 
 Expected: all exit 0; `check_vendor` reports `"ok": true`.
@@ -288,7 +288,7 @@ Expected: all exit 0; `check_vendor` reports `"ok": true`.
 ```powershell
 $git = 'C:\Program Files\Git\cmd\git.exe'
 $tmp = Join-Path $env:TEMP ('pylingual-submodules-' + [guid]::NewGuid())
-& $git clone --recurse-submodules file:///D:/RnD/pylingual-portable $tmp
+& $git clone --recurse-submodules file:///C:/pylingual-portable $tmp
 & $git -C $tmp submodule status --recursive
 .\scripts\python.cmd -c "import sys; sys.path.insert(0, r'$tmp\scripts'); from check_vendor import check_components; assert check_components()['ok']"
 Remove-Item -Recurse -Force $tmp

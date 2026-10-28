@@ -4,7 +4,10 @@
 > установке. Актуальные инструкции находятся в [`README.md`](../README.md),
 > [`docs/installation.md`](installation.md) и [`docs/usage.md`](usage.md).
 > Упоминания Linux и будущих этапов в плане описывают направление работ, а не
-> текущую поддержку платформы.
+> текущую поддержку платформы. Упоминания внешнего OpenCode CLI и evaluation
+> harness также исторические: текущий проект их не использует. Количественные
+> результаты и оценки в исторических разделах не являются текущими гарантиями;
+> актуальное состояние проверяется тестами, `doctor` и `probe_mcp.py`.
 
 **Версия документа:** 1.3 (draft)  
 **Дата:** 2026-10-23  
@@ -96,7 +99,7 @@
 
 **Открытых вопросов по scope нет.** Детали реализации (portable profile по умолчанию, точные команды update) фиксируются в ADR на фазе 0.
 
-**Implementation checkpoint (2026-10-24):** в `D:\RnD\pylingual-portable` установлен Windows x64 runtime: Python 3.15.1, torch 2.14.1+cu130, все toolchain-ы 3.6–3.15, все model packs 3.6–3.15. Проверены CUDA, CPU fallback, перенос сборки и end-to-end decompile на всех 10 версиях. Прогон на E:\CRM: **481/481** модулей без исходников декомпилированы и подтверждены exact verification; `.py` записаны рядом с `.pyc`, существующие исходники не перезаписываются. Реализованы MCP `finalize`, сессии, exact verification и patch-loop; `top_k=10` соответствует upstream. OpenCode harness переведён на последовательную модель: primary-оркестратор запускает **одного** `pylingual-worker` на файл и ждёт завершения; batch на уровне инструмента запрещён. Updater — следующий шаг. См. README.
+**Historical implementation checkpoint (2026-10-24):** на тот момент были установлены Windows x64 runtime, целевые toolchain-ы и model packs. Конкретные результаты прогонов и покрытие версий в этом документе не поддерживаются как актуальные: проверяйте текущее состояние через `doctor`, `probe_mcp.py` и тесты.
 
 ---
 
@@ -235,7 +238,7 @@ Python-байткод — это инструкции для стековой в
    - удаляется недостижимый код;
    - нормализуются последовательные безусловные переходы;
    - сравниваются инструкции, аргументы, порядок, exception table и значимые метаданные.
-   Это даёт отсутствие false positive (нельзя «подтвердить» неверный код), но возможны false negative для семантически эквивалентных, но синтаксически иных программ.
+   Это снижает риск false positive, но не устраняет его полностью: полнота проверки зависит от набора сравниваемых полей. Возможны false negative для семантически эквивалентных, но синтаксически иных программ.
 5. **`.pyc` — недоверенный вход.** Marshal/парсеры и компилятор — native-код; вредоносный файл может эксплуатировать парсер, вызвать OOM/зависание или подсунуть огромные структуры. Нужна изоляция.
 
 ### 2.2. Обзор существующих решений
@@ -322,7 +325,8 @@ Perfect decompilation — это не «код запустился», а **ст
    - значимые флаги/метаданные.
 5. Если всё совпало — perfect; если код компилируется, но есть отличия — semantic error; если не компилируется — syntax error; если toolchain недоступен — unverified.
 
-**Плюсы:** нет false positive; можно автоматически доверять «perfect».  
+**Плюсы:** при совпадении всех проверяемых полей результат можно принимать автоматически; остаточный риск false positive зависит от полноты компаратора.
+
 **Минусы:** false negative для семантически эквивалентных, но иначе записанных программ (перестановка независимых statements, другой синтаксис литералов, явные `if/raise` вместо `assert` и т.п.). Поэтому в отчёте нужно отделять `perfect` от `likely_equivalent`/`unverified`, но **никогда** не выдавать последнее за perfect.
 
 ### 2.5. Данные о качестве и поведении пользователей
@@ -571,8 +575,8 @@ stateDiagram-v2
 
 **Правила:**
 
-- Все пути — относительно portable root/workspace; запрещены `..`, symlink-и за пределы workspace, абсолютные пути из MCP.
-- В `session.json`, `meta.json` и manifest-ах хранятся только относительные пути (POSIX-разделители); абсолютный путь машины не сохраняется.
+- Целевое правило: пути внутри workspace — относительные; запрещены `..` и symlink-и за пределы workspace. Абсолютный путь входа допускается только как локальное состояние сессии.
+- В переносимых manifest/export хранятся относительные пути (POSIX-разделители). Локальный `session.json` может хранить абсолютный путь к исходному `.pyc`, необходимый для `finalize`; он не попадает в Git.
 - `PYLINGUAL_HOME` задаёт корень; workspace может быть внутри корня (portable profile) или внешним (read-only корень + writable workspace).
 - Атомарная запись: temp file + rename.
 - `session.json` — индекс; тяжёлые артефакты — отдельными файлами.
@@ -999,7 +1003,7 @@ class ModelRegistry:
 - `IMPORT_NAME`/`IMPORT_FROM` → проверить `import` vs `from ... import`.
 - `Different bytecode` при одинаковом CFG → likely formatting/constant form; показать `likely_equivalent` (но не perfect).
 
-**Стабильные ID:**
+**Стабильные IC:**
 
 - `code_object_id = "co_" + sha256(qualname + ":" + ordinal + ":" + original_code_hash)[:16]`.
 - При патче сопоставление по `qualname`; если изменилось — по ordinal + diff; в отчёте `mapping_confidence`.
@@ -1083,13 +1087,15 @@ OpenCode V2 хранит серверы в `mcp.servers` (не напрямую 
       "pylingual": {
         "type": "local",
         "command": [
-          "D:\\RnD\\pylingual-portable\\pylingual.exe",
+          "cmd.exe",
+          "/c",
+          "C:\\pylingual-portable\\pylingual.cmd",
           "mcp",
           "--stdio"
         ],
-        "cwd": "D:\\RnD\\pylingual-portable",
+        "cwd": "C:\\pylingual-portable",
         "environment": {
-          "PYLINGUAL_WORKSPACE": "D:\\RnD\\pylingual-portable\\workspace"
+          "PYLINGUAL_WORKSPACE": "C:\\pylingual-portable\\workspace"
         },
         "timeout": {
           "startup": 60000,
@@ -1101,14 +1107,11 @@ OpenCode V2 хранит серверы в `mcp.servers` (не напрямую 
 }
 ```
 
-Или через CLI:
+OpenCode загружает project-local конфигурацию при открытии проекта; CLI не
+используется.
 
-```powershell
-opencode mcp add pylingual -- "D:\RnD\pylingual-portable\pylingual.exe" mcp --stdio
-opencode mcp list
-```
-
-Streamable HTTP-вариант (single-user, локальный токен):
+**Планируемый** Streamable HTTP-вариант (single-user, локальный токен; в текущей
+сборке bearer-token ещё не реализован):
 
 ```jsonc title="opencode.jsonc"
 {
@@ -1344,18 +1347,17 @@ Rules:
 - `likely_equivalent` не считается успехом.
 - Для CI можно требовать `perfect` + `source_sha256` + подписанный report.
 
-**OpenCode harness (реализовано):**
+**OpenCode-интеграция (реализовано):**
 
 - `.opencode/agents/pylingual.md` — primary-оркестратор: принимает один/несколько `.pyc` или директорию, запускает ровно одного `pylingual-worker` за раз, ведёт журнал и проверяет результат.
 - `.opencode/agents/pylingual-worker.md` — subagent на один `.pyc`; цикл до `perfect`, без фиксированного лимита патчей и без промежуточного успеха; `pylingual_finalize` только при perfect.
-- `.opencode/skills/pylingual-repair/` — triage, контекстная дисциплина, repair patterns, version syntax, tool contract и evaluation guide.
-- `.opencode/commands/pylingual-*.md` — `/pylingual-decompile`, `/pylingual-repair`, `/pylingual-status`, `/pylingual-export`, `/pylingual-doctor`.
+- `.opencode/skills/pylingual-repair/` — triage, контекстная дисциплина, repair patterns, version syntax и tool contract.
+- `.opencode/commands/pylingual-*.md` — `/pylingual-run`, `/pylingual-decompile`, `/pylingual-repair`, `/pylingual-status`, `/pylingual-finalize`, `/pylingual-export`, `/pylingual-doctor`.
 - `.opencode/opencode.jsonc` — локальный MCP `pylingual` с `codemode: false`, `protocol: "legacy"`, tool timeout 30 мин.
-- `scripts/opencode_harness.py` — запускает `opencode run --standalone --agent pylingual --format json --auto`, независимо читает финальную сессию и считает успехом только `status: perfect`; сохраняет `summary.json`/`summary.md`, финальный source, report, session и raw events.
-- **Tool boundary:** PyLingual — единственный разрешённый декомпилятор. Агент/skill/runner prompt запрещают установку, скачивание, запуск, сравнение и даже проверку доступности `uncompyle6`, `decompyle3`, `pycdc`, `pycdas` и любых других bytecode-to-source инструментов; `check_opencode_harness.py` проверяет policy-маркеры и падает, если запрещённый пакет/исполняемый файл найден. `opencode_harness.py` выполняет preflight автоматически.
-- `harness/tasks.json` + 6 фикстур 3.12 (branches, loops, classes, exceptions, closures, comprehensions). Fake-прогон без модели проверяет plumbing; реальный baseline выполняется с выбранной моделью.
+- **Tool boundary:** PyLingual — единственный разрешённый декомпилятор. Агент и skill запрещают установку, скачивание, запуск, сравнение и проверку доступности `uncompyle6`, `decompyle3`, `pycdc`, `pycdas` и любых других bytecode-to-source инструментов.
+- OpenCode CLI и внешний evaluation harness не используются; агенты работают в нативной сессии, а MCP проверяется через `scripts/probe_mcp.py`.
 
-Текущее отличие от проектного черновика: `get_report` поддерживает `detail` `summary`/`compact`/`full`; `apply_patch` возвращает `fixed`/`regressed`/`remaining`/`progress`; async jobs, `cancel`, resources/prompts и HTTP-token пока не реализованы (MVP extension).
+Текущее отличие от проектного черновика: `get_report` поддерживает `detail` `summary`/`compact`/`full`; `apply_patch` возвращает `fixed`/`regressed`/`remaining`/`progress`; resources/prompts, agent specs и `cancel`-заглушка реализованы; async jobs и HTTP-token пока не реализованы (MVP extension).
 
 ### 4.8. Диагностический контекст (context pack)
 
@@ -1752,8 +1754,8 @@ pylingual update status
 8. **Как пользователь, я проверяю и применяю обновление кода/моделей, не ломая сессии.**
    - Acceptance: `update check` показывает diff; `update apply` делает staging/smoke/atomic switch; rollback; старые сессии открываются.
 
-9. **Как пользователь OpenCode, я подключаю MCP-сервер одной командой и вижу tools.**
-   - Acceptance: `opencode mcp add ...`; `opencode mcp list` — connected; tools `pylingual_decompile`, `pylingual_apply_patch` доступны; HTTP-вариант с токеном.
+9. **Как пользователь OpenCode, я открываю проект и вижу MCP tools без CLI.**
+   - Acceptance: project-local `.opencode/opencode.jsonc`; tools `pylingual_decompile`, `pylingual_apply_patch` доступны; HTTP-вариант с токеном.
 
 10. **Как пользователь, я переношу сборку на другую машину/USB и продолжаю работу без перенастройки путей.**
     - Acceptance: копирование корня; отсутствие абсолютных путей; sessions/config открываются; модели/исходники/отчёты переносимы между Windows и Linux; toolchain-ы платформенные.
@@ -1857,7 +1859,7 @@ pylingual update status
   - syntax-first vs top-down;
   - full-file vs code-object patch.
 - Метрики: success@1/3/5, iterations, time, tokens, regressions, patch verify latency.
-- Критерий: сервер никогда не принимает неверный код как perfect; агент улучшает success rate относительно source-only.
+- Критерий: сервер не должен принимать неверный код как perfect; остаточный риск false positive проверяется strict-компаратором и тестами. Агент улучшает success rate относительно source-only.
 
 ### 7.6. Release gates
 

@@ -6,8 +6,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-INVENTORY = ROOT / "workspace" / "crm-inventory.json"
-STATE = ROOT / "workspace" / "crm-state"
+INVENTORY = ROOT / "workspace" / "batch-inventory.json"
+STATE = ROOT / "workspace" / "batch-state"
 
 
 def norm(path: str) -> str:
@@ -24,7 +24,7 @@ def main() -> int:
         if norm(item["relative"]) in target_by_key:
             results[norm(item["relative"])] = item
     applied = set()
-    for path in sorted((ROOT / "workspace").glob("crm-repairs-applied*.json")):
+    for path in sorted((ROOT / "workspace").glob("batch-repairs-applied*.json")):
         for item in json.loads(path.read_text(encoding="utf-8")):
             if item.get("applied"):
                 applied.add(norm(item["relative"]))

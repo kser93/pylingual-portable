@@ -11,7 +11,7 @@ FIXTURES = ROOT / "harness" / "fixtures"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Compile OpenCode harness fixtures with a local target toolchain")
+    parser = argparse.ArgumentParser(description="Compile PyLingual fixture sources with a local target toolchain")
     parser.add_argument("--version", default="3.12", help="target Python version, e.g. 3.12")
     parser.add_argument("--force", action="store_true", help="recompile existing .pyc files")
     args = parser.parse_args()

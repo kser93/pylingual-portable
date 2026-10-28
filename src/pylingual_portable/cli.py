@@ -6,13 +6,13 @@ import os
 import sys
 from pathlib import Path
 
-from . import __version__
-from .paths import CONFIG, HF_HUB, ROOT, TOOLCHAINS
+from . import __version__, health
+from .paths import CONFIG, HF_HUB, ROOT
 from .runner import decompile_file
 from .upstream import assert_contract
 
 
-def _doctor() -> int:
+def _doctor(skip_models: bool = False, skip_toolchains: bool = False) -> int:
     print("PYLINGUAL_HOME:", ROOT)
     print("Python:", sys.version.replace("\n", " "))
     print("Executable:", sys.executable)
@@ -53,16 +53,37 @@ def _doctor() -> int:
         print("torch check failed:", repr(exc))
         return 1
 
-    print("Toolchains:")
-    for path in sorted(TOOLCHAINS.glob("cpython-*-win-x64/python.exe")):
-        print(f"  {path.parent.name}: ok")
-
+    report = health.installation_report(
+        require_models=not skip_models,
+        require_toolchains=not skip_toolchains,
+    )
     print("HF cache:", HF_HUB)
-    print("Installed model repos:")
-    for repo in sorted(HF_HUB.glob("models--syssec-utd--*")):
-        print(f"  {repo.name}")
+    print("Complete model packs:")
+    model_versions = report["models"]["models"]
+    if model_versions:
+        for version in model_versions:
+            print(f"  {version}: ok")
+    else:
+        print("  none")
+    for item in report["models"]["missing"]:
+        print(
+            f"  MISSING {item['version']}/{item['role']}: "
+            f"{', '.join(str(value) for value in item['missing'])}"
+        )
+    for error in report["models"]["errors"]:
+        print(f"  ERROR: {error}")
+
+    print("Toolchains:")
+    if report["toolchains"]["toolchains"]:
+        for directory in report["toolchains"]["toolchains"]:
+            print(f"  {directory}: ok")
+    else:
+        print("  none")
+    if report["toolchains"]["missing"]:
+        print("  MISSING:", ", ".join(report["toolchains"]["missing"]))
+
     print("Config:", CONFIG)
-    return 0
+    return 0 if report["ok"] else 1
 
 
 def _cmd_decompile(args: argparse.Namespace) -> int:
@@ -75,7 +96,8 @@ def _cmd_decompile(args: argparse.Namespace) -> int:
         top_k=args.top_k,
         timeout=args.timeout,
     )
-    print(f"success rate: {result.calculate_success_rate():.2%}")
+    rate = result.calculate_success_rate()
+    print(f"success rate: {rate:.2%}")
     for test_result in result.equivalence_results:
         print(test_result)
     if args.output:
@@ -83,7 +105,7 @@ def _cmd_decompile(args: argparse.Namespace) -> int:
     else:
         print()
         print(result.decompiled_source)
-    return 0
+    return 0 if result.equivalence_results and rate == 1.0 else 1
 
 
 def _cmd_mcp(args: argparse.Namespace) -> int:
@@ -114,7 +136,14 @@ def build_parser() -> argparse.ArgumentParser:
     decompile_parser.set_defaults(func=_cmd_decompile)
 
     doctor_parser = subparsers.add_parser("doctor", help="Check the local runtime")
-    doctor_parser.set_defaults(func=lambda _args: _doctor())
+    doctor_parser.add_argument("--skip-models", action="store_true", help="Do not require model packs")
+    doctor_parser.add_argument("--skip-toolchains", action="store_true", help="Do not require target toolchains")
+    doctor_parser.set_defaults(
+        func=lambda args: _doctor(
+            skip_models=args.skip_models,
+            skip_toolchains=args.skip_toolchains,
+        )
+    )
 
     mcp_parser = subparsers.add_parser("mcp", help="Run the MCP server")
     mcp_parser.add_argument("--transport", choices=["stdio", "streamable-http"], default="stdio")

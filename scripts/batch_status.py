@@ -6,8 +6,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-INVENTORY = ROOT / "workspace" / "crm-inventory.json"
-STATE = ROOT / "workspace" / "crm-state"
+INVENTORY = ROOT / "workspace" / "batch-inventory.json"
+STATE = ROOT / "workspace" / "batch-state"
 
 
 def key(relative: str) -> str:
@@ -26,11 +26,11 @@ def main() -> int:
             results[key(item["relative"])] = item
 
     applied = {}
-    for path in sorted((ROOT / "workspace").glob("crm-repairs-applied*.json")):
+    for path in sorted((ROOT / "workspace").glob("batch-repairs-applied*.json")):
         for item in json.loads(path.read_text(encoding="utf-8")):
             if item.get("applied"):
                 applied[key(item["relative"])] = item
-    session_applied = ROOT / "workspace" / "crm-session-applied.json"
+    session_applied = ROOT / "workspace" / "batch-session-applied.json"
     if session_applied.is_file():
         for item in json.loads(session_applied.read_text(encoding="utf-8")):
             applied[key(item["relative"])] = item

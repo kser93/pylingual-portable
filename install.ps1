@@ -200,28 +200,23 @@ if ($SourceOnly) {
 
 if ($CheckOnly) {
     Write-Step 'Checking the existing installation'
-    $problems = @()
     if (-not (Test-Path -LiteralPath $runtime)) {
-        $problems += "Python runtime not found: $runtime"
-    }
-    if (-not $SkipToolchains -and (Get-ToolchainCount -Root $root) -lt 10) {
-        $problems += 'Expected 10 CPython toolchains; run install.ps1 without -CheckOnly.'
-    }
-    if (-not $SkipModels -and (Get-InstalledModelCount -Root $root) -lt 10) {
-        $problems += 'Expected 10 model packs; run install.ps1 without -CheckOnly or use -SkipModels.'
-    }
-    if ($problems.Count -gt 0) {
-        foreach ($problem in $problems) { Write-Warn $problem }
+        Write-Warn "Python runtime not found: $runtime"
         exit 1
     }
-    Write-Ok 'runtime, toolchains and model manifests are present'
+    $doctorArgs = @()
+    if ($SkipModels) { $doctorArgs += '--skip-models' }
+    if ($SkipToolchains) { $doctorArgs += '--skip-toolchains' }
     Write-Step 'Running pylingual doctor'
-    & $launcher doctor
+    & $launcher doctor @doctorArgs
     Assert-ExitCode 'pylingual doctor'
     Write-Ok 'doctor completed'
     if (-not $SkipMcpProbe) {
         Write-Step 'Probing the MCP server'
-        & $pythonCmd $probe
+        $probeArgs = @()
+        if ($SkipModels) { $probeArgs += '--skip-models' }
+        if ($SkipToolchains) { $probeArgs += '--skip-toolchains' }
+        & $pythonCmd $probe @probeArgs
         Assert-ExitCode 'MCP probe'
         Write-Ok 'MCP server exposes tools, resources, prompts and agent manifest'
     }
@@ -308,13 +303,19 @@ else {
 }
 
 Write-Step 'Running pylingual doctor'
-& $launcher doctor
+$doctorArgs = @()
+if ($SkipModels) { $doctorArgs += '--skip-models' }
+if ($SkipToolchains) { $doctorArgs += '--skip-toolchains' }
+& $launcher doctor @doctorArgs
 Assert-ExitCode 'pylingual doctor'
 Write-Ok 'doctor completed'
 
 if (-not $SkipMcpProbe) {
     Write-Step 'Starting and probing the MCP server'
-    & $pythonCmd $probe
+    $probeArgs = @()
+    if ($SkipModels) { $probeArgs += '--skip-models' }
+    if ($SkipToolchains) { $probeArgs += '--skip-toolchains' }
+    & $pythonCmd $probe @probeArgs
     Assert-ExitCode 'MCP probe'
     Write-Ok 'MCP server is healthy'
 }

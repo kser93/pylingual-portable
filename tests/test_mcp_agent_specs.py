@@ -24,6 +24,48 @@ class AgentSpecsTest(unittest.TestCase):
 
         self.run_async(scenario())
 
+    def test_manifest_lists_registered_tools_and_resources(self) -> None:
+        async def scenario() -> None:
+            async with Client(mcp) as client:
+                tools = {tool.name for tool in (await client.list_tools()).tools}
+                resources = {str(resource.uri) for resource in (await client.list_resources()).resources}
+                prompts = {prompt.name for prompt in (await client.list_prompts()).prompts}
+                result = await client.call_tool("get_agent_manifest", {})
+                manifest = result.structured_content
+
+                self.assertLessEqual(set(manifest["tools"]), tools)
+                self.assertLessEqual(set(manifest["resources"].values()), resources)
+                self.assertLessEqual(set(manifest["prompts"]), prompts)
+                self.assertIn("get_patching_skill", tools)
+                self.assertIn("record_patching_rule", tools)
+                self.assertIn("pylingual://skills/pylingual-rules", resources)
+                self.assertIn("pylingual://skills/pylingual-patching-3.11", resources)
+
+        self.run_async(scenario())
+
+    def test_patching_skill_falls_back_for_unversioned_targets(self) -> None:
+        async def scenario() -> None:
+            async with Client(mcp) as client:
+                result = await client.call_tool(
+                    "get_patching_skill",
+                    {"version": "3.12", "include_all_versions": True},
+                )
+                payload = result.structured_content
+                self.assertEqual(payload["target"], "3.12")
+                self.assertFalse(payload["primary"]["available"])
+                self.assertEqual(payload["primary"]["rules"], [])
+                self.assertTrue(any(item["version"] == "3.11" for item in payload["others"]))
+
+                target = await client.call_tool(
+                    "get_patching_skill",
+                    {"version": "3.11", "include_all_versions": False},
+                )
+                target_payload = target.structured_content
+                self.assertTrue(target_payload["primary"]["available"])
+                self.assertTrue(target_payload["primary"]["rules"])
+
+        self.run_async(scenario())
+
     def test_manifest_resource_contains_repair_loop(self) -> None:
         async def scenario() -> None:
             async with Client(mcp) as client:
@@ -77,10 +119,10 @@ class AgentSpecsTest(unittest.TestCase):
 
                 result = await client.get_prompt(
                     "pylingual_worker_task",
-                    {"path": r"D:\samples\example.pyc", "version": "3.12"},
+                    {"path": r"C:\samples\example.pyc", "version": "3.12"},
                 )
                 text = "\n".join(message.content.text for message in result.messages)
-                self.assertIn(r"D:\samples\example.pyc", text)
+                self.assertIn(r"C:\samples\example.pyc", text)
                 self.assertIn("3.12", text)
                 self.assertIn('status: "perfect"', text)
 

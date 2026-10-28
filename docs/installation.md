@@ -60,8 +60,8 @@ OpenCode.
 Создайте пустой каталог и запустите установщик из временного файла:
 
 ```powershell
-New-Item -ItemType Directory -Force D:\pylingual | Out-Null
-Set-Location D:\pylingual
+New-Item -ItemType Directory -Force C:\pylingual | Out-Null
+Set-Location C:\pylingual
 
 $installer = Join-Path $env:TEMP 'pylingual-install.ps1'
 curl.exe -L --fail -o $installer `
@@ -81,7 +81,7 @@ powershell -NoProfile -ExecutionPolicy Bypass `
 ### Уже склонированный репозиторий
 
 ```powershell
-Set-Location D:\pylingual-portable-mcp
+Set-Location C:\pylingual-portable-mcp
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
@@ -284,8 +284,9 @@ $env:HF_TOKEN = 'hf_...'
 > Условия использования определяются карточками моделей на Hugging Face.
 > Проверьте их перед распространением сборки или результатов декомпиляции.
 
-После загрузки `models\installed.json` содержит пути к установленным
-snapshot-ам. Не удаляйте этот файл вручную.
+После загрузки локальный `models\installed.json` содержит пути к установленным
+snapshot-ам. Он не коммитится в Git; источником истины для `doctor` служит
+реальная проверка snapshot-ов по `models\model-links.json`.
 
 ### Шаг 6. Проверка установки
 
@@ -331,9 +332,9 @@ saved: ...\workspace\tmp\arithmetic.py
 ```
 
 `success rate: 100.00%` означает, что сгенерированный исходник компилируется
-в байткод, совпадающий с исходным `.pyc`. Это не означает текстового
-совпадения с оригинальным исходником: комментарии и форматирование не
-восстанавливаются.
+в байткод, а также совпадает по проверяемым code-object metadata и типам
+констант с исходным `.pyc`. Это не означает текстового совпадения с
+оригинальным исходником: комментарии и форматирование не восстанавливаются.
 
 ## OpenCode: MCP на уровне проекта
 
@@ -354,7 +355,7 @@ OpenCode не обязателен для работы PyLingual. Если он 
 Для этой установки:
 
 ```text
-D:\pylingual-portable-mcp\.opencode\opencode.jsonc
+C:\pylingual-portable-mcp\.opencode\opencode.jsonc
 ```
 
 Если файл уже существует, добавьте в него только секцию `mcp.servers.pylingual`
@@ -362,7 +363,7 @@ D:\pylingual-portable-mcp\.opencode\opencode.jsonc
 
 ### Содержимое файла
 
-Замените `D:\\pylingual-portable-mcp` на фактический абсолютный путь к каталогу
+Замените `C:\\pylingual-portable-mcp` на фактический абсолютный путь к каталогу
 установки:
 
 ```json
@@ -380,11 +381,11 @@ D:\pylingual-portable-mcp\.opencode\opencode.jsonc
         "command": [
           "cmd.exe",
           "/c",
-          "D:\\pylingual-portable-mcp\\pylingual.cmd",
+          "C:\\pylingual-portable-mcp\\pylingual.cmd",
           "mcp",
           "--stdio"
         ],
-        "cwd": "D:\\pylingual-portable-mcp",
+        "cwd": "C:\\pylingual-portable-mcp",
         "codemode": false,
         "protocol": "legacy",
         "timeout": {
@@ -402,29 +403,21 @@ D:\pylingual-portable-mcp\.opencode\opencode.jsonc
 
 - `type: "local"` — OpenCode запускает сервер как дочерний процесс;
 - `command` — `cmd.exe`, потому что `pylingual.cmd` является batch-файлом;
-- `cwd` — абсолютный каталог установки; не используйте `.`;
+- `cwd` — каталог проекта; `.` означает корень проекта, абсолютный путь тоже допустим;
 - `codemode: false` — инструменты доступны как `pylingual_<tool>`;
 - `protocol: "legacy"` — режим, проверенный с текущей версией OpenCode;
 - `timeout` — запуск, каталог инструментов и выполнение.
 
-Если путь содержит пробелы, используйте его в JSON как обычную строку и
-проверьте запуск через preflight ниже.
+Если путь содержит пробелы, используйте его в JSON как обычную строку.
+`cwd: "."` допустим и означает корень проекта.
 
 ### Проверка
 
-Из корня проекта:
+CLI `opencode` не требуется. Откройте проект в OpenCode; конфигурация
+`.opencode/opencode.jsonc` загрузится как project-local. В новой сессии
+инструменты должны быть доступны с префиксом `pylingual_`.
 
-```powershell
-Set-Location D:\pylingual-portable-mcp
-opencode mcp list
-```
-
-В списке должен быть `pylingual` со статусом `connected`. Если список пуст,
-проверьте, что OpenCode открыт именно в этом каталоге и что файл лежит в
-`.opencode\opencode.jsonc`, а не в глобальном конфиге.
-
-После подключения новая сессия должна видеть инструменты с префиксом
-`pylingual_`. Проверка через агента:
+Проверка через агента:
 
 ```text
 Вызови pylingual_get_agent_manifest и покажи schema, spec_version и loop.
@@ -433,13 +426,14 @@ opencode mcp list
 Ожидается `schema: "pylingual/agent-manifest/v1"` и цикл, заканчивающийся
 `status == "perfect"` → `finalize`.
 
-Если `opencode models` пуст или модель не авторизована, MCP-подключение всё
-равно может быть исправным; настройте провайдера отдельно:
+Проверить сам MCP-сервер без OpenCode можно командой:
 
 ```powershell
-opencode models
-opencode auth login
+.\scripts\python.cmd .\scripts\probe_mcp.py
 ```
+
+Модель и авторизацию провайдера настраивайте в клиенте OpenCode, а не через
+команды проекта.
 
 ### Нужны ли файлы агентов
 
@@ -527,9 +521,7 @@ upstream:
 
 ```powershell
 .\scripts\python.cmd .\scripts\check_vendor.py
-.\scripts\python.cmd -m unittest tests.test_vendor_manifest
-.\scripts\python.cmd -m unittest tests.test_timestamp_patch
-.\scripts\python.cmd -m unittest tests.test_upstream_contract
+.\scripts\python.cmd -m unittest discover -s tests -v
 ```
 
 `check_vendor.py` не использует сеть. При наличии Git он дополнительно
@@ -577,7 +569,7 @@ git submodule update --init --recursive
 ### Ошибка доступа или слишком длинный путь
 
 HF-кэш содержит длинные пути. Включите поддержку длинных путей Windows или
-разместите проект в коротком каталоге, например `D:\pylingual`.
+разместите проект в коротком каталоге, например `C:\pylingual`.
 
 ### MCP-сервер не подключается
 

@@ -9,13 +9,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INVENTORY = ROOT / "workspace" / "crm-inventory.json"
-DEFAULT_VERIFY = ROOT / "workspace" / "crm-final-verification.json"
-DEFAULT_MARKER = ROOT / "workspace" / "CRM_DECOMPILE_COMPLETE.json"
+DEFAULT_INVENTORY = ROOT / "workspace" / "batch-inventory.json"
+DEFAULT_VERIFY = ROOT / "workspace" / "batch-final-verification.json"
+DEFAULT_MARKER = ROOT / "workspace" / "BATCH_DECOMPILE_COMPLETE.json"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify the CRM outputs and write a completion marker")
+    parser = argparse.ArgumentParser(description="Verify the batch outputs and write a completion marker")
     parser.add_argument("--inventory", default=str(DEFAULT_INVENTORY))
     parser.add_argument("--verify", default=str(DEFAULT_VERIFY))
     parser.add_argument("--marker", default=str(DEFAULT_MARKER))
@@ -26,7 +26,7 @@ def main() -> int:
     result = subprocess.run(
         [
             sys.executable,
-            str(ROOT / "scripts" / "crm_final_verify.py"),
+            str(ROOT / "scripts" / "batch_final_verify.py"),
             "--inventory",
             str(Path(args.inventory).resolve()),
             "--output",
@@ -59,7 +59,7 @@ def main() -> int:
     status = "complete" if targets > 0 and perfect == targets and failed == 0 else "incomplete"
     marker = {
         "status": status,
-        "scope": "E:\\CRM .pyc modules without an adjacent source file",
+        "scope": ".pyc modules without an adjacent source file",
         "targets": targets,
         "perfect": perfect,
         "mismatch_or_failed": failed,

@@ -4,11 +4,16 @@
 /downloads/
 /workspace/
 
+# Decompilation sessions and generated outputs are local-only
+/workspace/sessions/
+/workspace/exports/
+/workspace/tmp/
+/workspace/runs/
+
 # Model packs are local; keep only small manifests in the repository
 /models/
 !/models/
 /models/*
-!/models/installed.json
 !/models/model-links.json
 !/models/update-check.json
 
@@ -18,10 +23,12 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# Harness outputs; fixture .pyc files are build inputs and stay tracked
-/harness/results/
+# Fixture .pyc files are build inputs and stay tracked
 !/harness/fixtures/pyc/
 !/harness/fixtures/pyc/**/*.pyc
+
+# Generated decompiler output beside a fixture must never be committed
+/harness/fixtures/pyc/**/*.py
 
 # Logs and temporary files
 *.log

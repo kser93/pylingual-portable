@@ -9,8 +9,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .paths import ROOT, WORKSPACE
+from .strict_verification import compare_pyc_strict
 from .toolchain import compile_with_toolchain
-from .upstream import CompileError, PYCFile, compare_pyc
+from .upstream import CompileError, PYCFile
 
 
 SESSIONS = WORKSPACE / "sessions"
@@ -32,10 +33,17 @@ def sha256_text(text: str) -> str:
     return sha256_bytes(text.encode("utf-8"))
 
 
+def normalize_source(text: str) -> str:
+    """Use LF consistently so file bytes and reported hashes agree on Windows."""
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
 def atomic_write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(text, encoding="utf-8")
+    # Keep the on-disk bytes identical to sha256_text(): Python's default
+    # newline translation would write CRLF on Windows and break audit hashes.
+    tmp.write_text(text, encoding="utf-8", newline="\n")
     tmp.replace(path)
 
 
@@ -124,7 +132,9 @@ def _make_report(
                     }
                 )
                 continue
-            bc = getattr(result, "bc_a", None) or getattr(result, "bc_b", None)
+            bc = getattr(result, "bc_a", None)
+            if bc is None:
+                bc = getattr(result, "bc_b", None)
             name = getattr(bc, "name", "unknown") if bc is not None else "unknown"
             first_line = None
             if bc is not None:
@@ -231,6 +241,7 @@ def new_session(pyc_path: Path, version: str, options: dict) -> tuple[str, Path]
 
 
 def save_initial_revision(session_id: str, result, source: str) -> dict:
+    source = normalize_source(source)
     directory = _session_dir(session_id)
     meta = _read_meta(session_id)
     report = _make_report(
@@ -262,6 +273,7 @@ def save_initial_revision(session_id: str, result, source: str) -> dict:
 
 def import_source(pyc_path: Path, source: str, version: str, options: dict | None = None) -> tuple[str, dict]:
     """Create a session from an existing candidate source without re-decompiling."""
+    source = normalize_source(source)
     session_id, source_path = new_session(Path(pyc_path), version, options or {"imported": True})
     report = _verify_source(session_id, source)
     meta = _read_meta(session_id)
@@ -394,6 +406,7 @@ def get_code_object(session_id: str, code_object_id: str, revision: int | None =
 
 
 def _verify_source(session_id: str, source: str) -> dict:
+    source = normalize_source(source)
     if len(source.encode("utf-8")) > MAX_SOURCE_BYTES:
         raise ValueError(f"source exceeds {MAX_SOURCE_BYTES} bytes")
     meta = _read_meta(session_id)
@@ -412,7 +425,7 @@ def _verify_source(session_id: str, source: str) -> dict:
             compile_error=str(exc),
         )
     try:
-        results = compare_pyc(directory / "input" / "original.pyc", pyc_path)
+        results = compare_pyc_strict(directory / "input" / "original.pyc", pyc_path)
     except Exception as exc:
         return _make_report(
             [],
@@ -487,6 +500,7 @@ def apply_patch(
             "expected": current,
             "received": int(base_revision),
         }
+    source = normalize_source(source)
     report = _verify_source(session_id, source)
     delta = _patch_delta(session_id, current, report)
     view = _report_view(report, detail, max_code_objects=max_code_objects)
@@ -563,18 +577,48 @@ def finalize_source(
     This is intentionally single-file: it never touches another session or
     another .pyc. A non-perfect session is rejected. Existing sources are never
     overwritten; the result gets a ``_decompiled_{i}`` suffix instead.
+
+    Finalization re-runs exact verification instead of trusting the persisted
+    report. Reports produced by an older comparator, or edited on disk, must not
+    be able to bypass the current strict verifier.
     """
     meta = _read_meta(session_id)
-    report = get_report(session_id)
-    if report["status"] != "perfect":
+    stored_report = get_report(session_id)
+    if stored_report["status"] != "perfect":
         return {
             "session_id": session_id,
             "error": "not_perfect",
-            "status": report["status"],
-            "summary": report["summary"],
+            "status": stored_report["status"],
+            "summary": stored_report["summary"],
         }
     revision, source = _source_for(session_id)
+    source_sha256 = sha256_text(source)
+    stored_sha256 = str(stored_report.get("source_sha256", ""))
+    if stored_sha256 != source_sha256:
+        return {
+            "session_id": session_id,
+            "error": "source_hash_mismatch",
+            "revision": revision,
+            "expected_sha256": stored_sha256,
+            "actual_sha256": source_sha256,
+        }
     original_pyc = Path(meta["input"]["path"]).resolve()
+    if not original_pyc.is_file():
+        return {
+            "session_id": session_id,
+            "error": "original_pyc_missing",
+            "original_pyc": str(original_pyc),
+        }
+    recorded_sha256 = str(meta.get("input", {}).get("sha256", ""))
+    actual_sha256 = sha256_bytes(original_pyc.read_bytes())
+    if recorded_sha256 and actual_sha256 != recorded_sha256:
+        return {
+            "session_id": session_id,
+            "error": "original_pyc_changed",
+            "original_pyc": str(original_pyc),
+            "expected_sha256": recorded_sha256,
+            "actual_sha256": actual_sha256,
+        }
     requested = Path(target_path).expanduser() if target_path else original_pyc.with_suffix(".py")
     if not requested.is_absolute():
         requested = (original_pyc.parent / requested).resolve()
@@ -589,8 +633,44 @@ def finalize_source(
             "target": str(requested),
             "original_pyc": str(original_pyc),
         }
+    try:
+        verified_report = _verify_source(session_id, source)
+    except Exception as exc:
+        return {
+            "session_id": session_id,
+            "error": "verification_failed",
+            "revision": revision,
+            "message": repr(exc),
+        }
+    if verified_report["status"] != "perfect":
+        return {
+            "session_id": session_id,
+            "error": "not_perfect",
+            "status": verified_report["status"],
+            "summary": verified_report["summary"],
+            "diagnostics": verified_report["diagnostics"][:20],
+            "revision": revision,
+            "reverified": True,
+        }
+    verified_sha256 = str(verified_report.get("source_sha256", ""))
+    if verified_sha256 != source_sha256:
+        return {
+            "session_id": session_id,
+            "error": "source_hash_mismatch",
+            "revision": revision,
+            "expected_sha256": verified_sha256,
+            "actual_sha256": source_sha256,
+        }
     target = _decompiled_target(requested)
     atomic_write_text(target, source)
+    digest = source_sha256
+    meta["finalized"] = {
+        "path": str(target),
+        "sha256": digest,
+        "revision": revision,
+        "created_at": now(),
+    }
+    _write_meta(session_id, meta)
     return {
         "session_id": session_id,
         "revision": revision,
@@ -598,5 +678,6 @@ def finalize_source(
         "requested_path": str(requested),
         "path": str(target),
         "renamed": target != requested,
-        "sha256": sha256_text(source),
+        "sha256": digest,
+        "reverified": True,
     }

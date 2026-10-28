@@ -451,17 +451,13 @@ def get_patching_skill(version: str, include_all_versions: bool = True) -> dict[
     """
     target = _normalize_version(version)
     entries = _patch_skill_entries()
-    if target not in entries:
-        raise ValueError(
-            f"no patching skill for {target}; known versions: {', '.join(sorted(entries))}"
-        )
-
-    primary_content = _read_spec(entries[target]["file"])
+    primary_content = _read_spec(entries[target]["file"]) if target in entries else ""
     primary_rules = _parse_rule_blocks(primary_content)
     result: dict[str, Any] = {
         "target": target,
         "primary": {
             "version": target,
+            "available": target in entries,
             "sha256": hashlib.sha256(primary_content.encode("utf-8")).hexdigest(),
             "rules": primary_rules,
         },

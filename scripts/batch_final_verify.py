@@ -5,8 +5,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from pylingual.equivalence_check import compare_pyc
-
+from pylingual_portable.strict_verification import compare_pyc_strict as compare_pyc
 from pylingual_portable.toolchain import compile_with_toolchain
 
 
@@ -51,9 +50,9 @@ def verify_one(item: dict, work_dir: Path) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify CRM recovered .py files against original .pyc")
-    parser.add_argument("--inventory", default=str(ROOT / "workspace" / "crm-inventory.json"))
-    parser.add_argument("--output", default=str(ROOT / "workspace" / "crm-final-verification.json"))
+    parser = argparse.ArgumentParser(description="Verify recovered .py files against original .pyc")
+    parser.add_argument("--inventory", default=str(ROOT / "workspace" / "batch-inventory.json"))
+    parser.add_argument("--output", default=str(ROOT / "workspace" / "batch-final-verification.json"))
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--include-existing", action="store_true")
     args = parser.parse_args()
@@ -64,7 +63,7 @@ def main() -> int:
         for item in inventory.get("records", [])
         if args.include_existing or not item.get("existing_source")
     ]
-    work_dir = ROOT / "workspace" / "crm-verify"
+    work_dir = ROOT / "workspace" / "batch-verify"
     work_dir.mkdir(parents=True, exist_ok=True)
     print(f"verify targets: {len(records)}")
     results = []

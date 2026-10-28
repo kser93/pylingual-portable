@@ -4,10 +4,10 @@ import argparse
 import difflib
 from pathlib import Path
 
-from pylingual.equivalence_check import compare_pyc
 from pylingual.editable_bytecode import PYCFile
 
 from pylingual_portable import sessions
+from pylingual_portable.strict_verification import compare_pyc_strict as compare_pyc
 from pylingual_portable.toolchain import compile_with_toolchain
 
 
